@@ -5,98 +5,85 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ViralPX - Home</title>
     <style>
-        :root { --primary: #E50914; --dark: #141414; --gray: #2F2F2F; }
-        body { background-color: var(--dark); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 50px; }
+        :root { --primary: #E50914; --dark: #141414; }
+        body { background-color: var(--dark); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; }
         
-        /* Header */
-        header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 5%; background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
-            position: sticky; top: 0; z-index: 100; backdrop-filter: blur(5px);
-        }
-        .brand { display: flex; align-items: center; gap: 10px; }
-        .brand img { height: 40px; }
-        .brand span { font-size: 24px; font-weight: 800; color: var(--primary); letter-spacing: 1px; }
+        header { padding: 15px 5%; background: linear-gradient(to bottom, black, transparent); position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+        .logo { font-size: 24px; font-weight: 800; color: var(--primary); text-transform: uppercase; }
         
-        /* Telegram Button */
-        .tg-btn {
-            background: #0088cc; color: white; text-decoration: none;
-            padding: 8px 15px; border-radius: 20px; font-weight: bold; font-size: 14px;
-            display: flex; align-items: center; gap: 5px; transition: 0.3s;
-        }
-        .tg-btn:hover { background: #0099e6; transform: scale(1.05); }
-
-        /* Movie Grid */
+        /* Search Bar */
+        .search-box { background: #333; border: none; padding: 8px 15px; border-radius: 20px; color: white; width: 200px; outline: none; }
+        
         .container { padding: 20px 5%; }
-        h2 { border-left: 4px solid var(--primary); padding-left: 10px; margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; margin-top: 20px; }
         
-        .grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 15px;
-        }
-
-        .card {
-            background: var(--gray); border-radius: 8px; overflow: hidden;
-            text-decoration: none; color: white; transition: 0.3s; position: relative;
-        }
-        .card:hover { transform: scale(1.03); z-index: 2; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
-        
-        .card img { width: 100%; height: 240px; object-fit: cover; opacity: 0.9; }
-        .card:hover img { opacity: 1; }
-        
+        .card { background: #222; border-radius: 8px; overflow: hidden; text-decoration: none; color: white; transition: 0.3s; position: relative; display: block; }
+        .card:hover { transform: scale(1.03); z-index: 2; box-shadow: 0 10px 20px rgba(0,0,0,0.5); border: 2px solid var(--primary); }
+        .card img { width: 100%; height: 240px; object-fit: cover; }
         .card-info { padding: 10px; }
         .title { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .play-icon { font-size: 12px; color: #aaa; margin-top: 5px; display: block; }
+        .views { font-size: 11px; color: #888; margin-top: 5px; display: block; }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="brand">
-            <img src="https://cdn.jsdelivr.net/gh/free-whiteboard-online/Free-Erasorio-Alternative-for-Collaborative-Design@8f20fe910c273b5ad2999092b114fb448543da14/uploads/2025-12-23T09-29-15-155Z-j5i7vzarb.png" alt="Logo">
-            <span>ViralPX</span>
-        </div>
-        <a href="https://t.me/viralpx" target="_blank" class="tg-btn">🚀 Join Telegram</a>
+        <div class="logo">ViralPX</div>
+        <input type="text" id="searchInput" class="search-box" placeholder="Search movies...">
     </header>
 
     <div class="container">
-        <h2>🔥 Latest Movies</h2>
-        <div class="grid" id="movieList">
-            <p style="color:#777;">Loading content...</p>
-        </div>
+        <h2>🔥 Trending Movies</h2>
+        <div class="grid" id="movieGrid">Loading...</div>
     </div>
 
     <script type="module">
         import { db, ref, onValue } from './firebase-config.js';
         
-        const grid = document.getElementById('movieList');
-        
+        const grid = document.getElementById('movieGrid');
+        const searchInput = document.getElementById('searchInput');
+        let allMovies = [];
+
         onValue(ref(db, 'movies'), (snapshot) => {
-            grid.innerHTML = "";
             const data = snapshot.val();
+            grid.innerHTML = "";
             
             if(data){
-                // Convert to array and reverse to show Latest first
-                const movies = Object.entries(data).reverse();
+                // Convert to Array & Sort by Order
+                allMovies = Object.entries(data).map(([key, val]) => ({ key, ...val }));
                 
-                movies.forEach(([key, movie]) => {
-                    const a = document.createElement('a');
-                    a.className = 'card';
-                    // URL me key pass nahi kar rahe, direct data bhej rahe player ko
-                    a.href = `player.html?t=${encodeURIComponent(movie.title)}&s=${encodeURIComponent(movie.streamUrl)}`;
-                    
-                    a.innerHTML = `
-                        <img src="${movie.thumbnail}" loading="lazy" alt="poster">
-                        <div class="card-info">
-                            <div class="title">${movie.title}</div>
-                            <span class="play-icon">▶ Click to Play</span>
-                        </div>
-                    `;
-                    grid.appendChild(a);
-                });
+                // Sorting Logic: Order (Ascending) -> Then Views (Descending)
+                allMovies.sort((a, b) => (a.order - b.order) || (b.views - a.views));
+                
+                renderMovies(allMovies);
             } else {
-                grid.innerHTML = "<p>No movies available.</p>";
+                grid.innerHTML = "<p>No movies added.</p>";
             }
+        });
+
+        function renderMovies(movies) {
+            grid.innerHTML = "";
+            movies.forEach(movie => {
+                const a = document.createElement('a');
+                a.className = 'card';
+                // IMPORTANT: Sending ID now
+                a.href = `player.html?id=${movie.key}`;
+                a.innerHTML = `
+                    <img src="${movie.thumbnail}" loading="lazy">
+                    <div class="card-info">
+                        <div class="title">${movie.title}</div>
+                        <span class="views">👁️ ${movie.views || 0} Views</span>
+                    </div>
+                `;
+                grid.appendChild(a);
+            });
+        }
+
+        // Search Functionality
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = allMovies.filter(m => m.title.toLowerCase().includes(term));
+            renderMovies(filtered);
         });
     </script>
 </body>
