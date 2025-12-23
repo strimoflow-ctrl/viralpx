@@ -3,8 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ViralPX - Watch Free Movies</title>
-    <link rel="stylesheet" href="style.css">
+    <title>ViralPX - Home</title>
+    <style>
+        /* CSS Merged Here */
+        body {
+            background-color: #121212;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: #1f1f1f;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+        .logo { height: 50px; margin-right: 15px; }
+        .site-name {
+            font-size: 24px; font-weight: bold; color: #e50914;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .container { padding: 20px; max-width: 1200px; margin: 0 auto; }
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .movie-card {
+            background: #1f1f1f;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s;
+            text-decoration: none;
+            color: white;
+            display: block;
+        }
+        .movie-card:hover { transform: scale(1.05); border: 2px solid #e50914; }
+        .movie-card img { width: 100%; height: 270px; object-fit: cover; }
+        .movie-info { padding: 10px; text-align: center; }
+        .movie-title { font-size: 15px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    </style>
 </head>
 <body>
 
@@ -16,75 +58,40 @@
     <div class="container">
         <h2>Latest Movies</h2>
         <div class="movie-grid" id="movieContainer">
-            <!-- Movies yahan load hongi Firebase se -->
-            <p>Loading movies...</p>
+            <p>Loading movies from Firebase...</p>
         </div>
     </div>
 
-    <!-- Video Player Overlay (Hidden by default) -->
-    <div id="player-overlay">
-        <video id="mainPlayer" controls autoplay>
-            <source src="" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
-        <button class="close-btn" onclick="closePlayer()">Close Player</button>
-    </div>
-
-    <!-- Script Module -->
     <script type="module">
         import { db, ref, onValue } from './firebase-config.js';
 
         const movieContainer = document.getElementById('movieContainer');
-
         const moviesRef = ref(db, 'movies');
         
         onValue(moviesRef, (snapshot) => {
             const data = snapshot.val();
-            movieContainer.innerHTML = ""; // Clear loader
+            movieContainer.innerHTML = ""; 
 
             if (data) {
-                // Loop through all movies in database
                 Object.values(data).forEach(movie => {
-                    const card = document.createElement('div');
-                    card.classList.add('movie-card');
+                    // Yahan hum Link bana rahe hain jo player.html pe le jayega
+                    // URL me hum title aur stream link pass kar rahe hain
+                    const link = document.createElement('a');
+                    link.href = `player.html?title=${encodeURIComponent(movie.title)}&src=${encodeURIComponent(movie.streamUrl)}`;
+                    link.classList.add('movie-card');
                     
-                    card.innerHTML = `
+                    link.innerHTML = `
                         <img src="${movie.thumbnail}" alt="${movie.title}">
                         <div class="movie-info">
                             <div class="movie-title">${movie.title}</div>
                         </div>
                     `;
-
-                    // Click event to play video
-                    card.addEventListener('click', () => {
-                        openPlayer(movie.streamUrl);
-                    });
-
-                    movieContainer.appendChild(card);
+                    movieContainer.appendChild(link);
                 });
             } else {
-                movieContainer.innerHTML = "<p>No movies added yet.</p>";
+                movieContainer.innerHTML = "<p>No movies found. Add from Admin Panel.</p>";
             }
         });
-
-        // Player Logic globally accessible banani padegi
-        window.openPlayer = (url) => {
-            const playerOverlay = document.getElementById('player-overlay');
-            const player = document.getElementById('mainPlayer');
-            
-            player.src = url;
-            playerOverlay.style.display = 'flex';
-            player.play();
-        }
-
-        window.closePlayer = () => {
-            const playerOverlay = document.getElementById('player-overlay');
-            const player = document.getElementById('mainPlayer');
-            
-            player.pause();
-            player.src = "";
-            playerOverlay.style.display = 'none';
-        }
     </script>
 </body>
 </html>
