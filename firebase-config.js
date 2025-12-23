@@ -3,13 +3,13 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.3/firebase
 import { getDatabase, ref, set, push, onValue } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-database.js";
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyBzqgS3yJfKIOCu7QxFIoNce1J7miF-2tc",
+  authDomain: "viralpx-f50e8.firebaseapp.com",
+  databaseURL: "https://viralpx-f50e8-default-rtdb.firebaseio.com",
+  projectId: "viralpx-f50e8",
+  storageBucket: "viralpx-f50e8.firebasestorage.app",
+  messagingSenderId: "655981871742",
+  appId: "1:655981871742:web:7161576f814eae3856ce2f"
 };
 
 const app = initializeApp(firebaseConfig);
