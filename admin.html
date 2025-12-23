@@ -3,61 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - ViralPX</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Admin Dashboard</title>
+    <style>
+        body { background: #0f0f0f; color: #ddd; font-family: sans-serif; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        
+        /* Form Section */
+        .panel { background: #1f1f1f; padding: 20px; border-radius: 10px; border: 1px solid #333; margin-bottom: 30px; }
+        h2 { margin-top: 0; color: #E50914; }
+        
+        input { width: 100%; padding: 12px; margin: 8px 0; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 4px; box-sizing: border-box; }
+        
+        .btn-group { display: flex; gap: 10px; margin-top: 10px; }
+        button { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; flex: 1; }
+        .save-btn { background: #E50914; color: white; }
+        .update-btn { background: #0088cc; color: white; display: none; } /* Hidden by default */
+        .cancel-btn { background: #555; color: white; display: none; }
+        
+        /* List Section */
+        .list-item { display: flex; justify-content: space-between; align-items: center; background: #1a1a1a; padding: 10px; margin-bottom: 5px; border-radius: 4px; border-left: 3px solid #E50914; }
+        .list-info { display: flex; align-items: center; gap: 10px; }
+        .thumb-preview { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; }
+        
+        .actions button { padding: 5px 10px; margin-left: 5px; font-size: 12px; }
+        .edit-btn { background: #444; color: white; }
+        .del-btn { background: #990000; color: white; }
+
+    </style>
 </head>
 <body>
 
-    <header>
-        <img src="https://cdn.jsdelivr.net/gh/free-whiteboard-online/Free-Erasorio-Alternative-for-Collaborative-Design@8f20fe910c273b5ad2999092b114fb448543da14/uploads/2025-12-23T09-29-15-155Z-j5i7vzarb.png" alt="ViralPX Logo" class="logo">
-        <div class="site-name">ViralPX Admin</div>
-    </header>
-
     <div class="container">
-        <h2 style="text-align: center;">Add New Movie</h2>
-        <div class="admin-form">
-            <input type="text" id="movieTitle" placeholder="Movie Name">
-            <input type="text" id="movieThumb" placeholder="Thumbnail URL (Image Link)">
-            <input type="text" id="movieStream" placeholder="Stream Link (From Telegram Bot)">
-            <button class="btn" id="addBtn">Add to Database</button>
+        <!-- Form Area -->
+        <div class="panel">
+            <h2 id="formTitle">Add New Movie</h2>
+            <input type="hidden" id="editKey"> <!-- Secret ID holder for editing -->
+            <input type="text" id="mTitle" placeholder="Movie Title">
+            <input type="text" id="mThumb" placeholder="Thumbnail Image URL">
+            <input type="text" id="mStream" placeholder="Stream URL (Render/Bot Link)">
+            
+            <div class="btn-group">
+                <button class="save-btn" id="saveBtn">Add Movie</button>
+                <button class="update-btn" id="updateBtn">Update Movie</button>
+                <button class="cancel-btn" id="cancelBtn">Cancel Edit</button>
+            </div>
+            <p id="msg" style="text-align: center; margin-top: 10px;"></p>
         </div>
-        <p id="status" style="text-align: center; color: lime;"></p>
+
+        <!-- List Area -->
+        <h3>Manage Movies</h3>
+        <div id="movieList">Loading...</div>
     </div>
 
-    <!-- Script Module -->
     <script type="module">
-        import { db, ref, push, set } from './firebase-config.js';
+        import { db, ref, push, set, onValue, remove, update } from './firebase-config.js';
 
-        document.getElementById('addBtn').addEventListener('click', () => {
-            const title = document.getElementById('movieTitle').value;
-            const thumb = document.getElementById('movieThumb').value;
-            const stream = document.getElementById('movieStream').value;
-            const status = document.getElementById('status');
+        // Inputs
+        const titleIn = document.getElementById('mTitle');
+        const thumbIn = document.getElementById('mThumb');
+        const streamIn = document.getElementById('mStream');
+        const editKeyIn = document.getElementById('editKey');
+        const msg = document.getElementById('msg');
 
-            if(title && thumb && stream) {
-                const moviesRef = ref(db, 'movies');
-                const newMovieRef = push(moviesRef);
-                
-                set(newMovieRef, {
-                    title: title,
-                    thumbnail: thumb,
-                    streamUrl: stream
+        // Buttons
+        const saveBtn = document.getElementById('saveBtn');
+        const updateBtn = document.getElementById('updateBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+
+        // 1. Add New Movie
+        saveBtn.addEventListener('click', () => {
+            if(titleIn.value && thumbIn.value && streamIn.value){
+                push(ref(db, 'movies'), {
+                    title: titleIn.value,
+                    thumbnail: thumbIn.value,
+                    streamUrl: streamIn.value
                 }).then(() => {
-                    status.innerText = "Movie Added Successfully!";
-                    // Clear inputs
-                    document.getElementById('movieTitle').value = '';
-                    document.getElementById('movieThumb').value = '';
-                    document.getElementById('movieStream').value = '';
-                    
-                    setTimeout(() => status.innerText = "", 3000);
-                }).catch((error) => {
-                    status.style.color = 'red';
-                    status.innerText = "Error: " + error.message;
+                    clearForm();
+                    showMsg("Movie Added!", "lime");
                 });
-            } else {
-                alert("Please fill all details!");
+            } else { showMsg("Fill all fields", "red"); }
+        });
+
+        // 2. Update Existing Movie
+        updateBtn.addEventListener('click', () => {
+            const key = editKeyIn.value;
+            if(key){
+                update(ref(db, 'movies/' + key), {
+                    title: titleIn.value,
+                    thumbnail: thumbIn.value,
+                    streamUrl: streamIn.value
+                }).then(() => {
+                    clearForm();
+                    resetButtons();
+                    showMsg("Movie Updated!", "lime");
+                });
             }
         });
+
+        cancelBtn.addEventListener('click', () => { clearForm(); resetButtons(); });
+
+        // 3. List Movies with Edit/Delete
+        onValue(ref(db, 'movies'), (snap) => {
+            const list = document.getElementById('movieList');
+            list.innerHTML = "";
+            const data = snap.val();
+            
+            if(data){
+                // Reverse to show latest on top
+                Object.entries(data).reverse().forEach(([key, val]) => {
+                    const item = document.createElement('div');
+                    item.className = 'list-item';
+                    item.innerHTML = `
+                        <div class="list-info">
+                            <img src="${val.thumbnail}" class="thumb-preview">
+                            <span>${val.title}</span>
+                        </div>
+                        <div class="actions">
+                            <button class="edit-btn" onclick="startEdit('${key}', '${val.title.replace(/'/g, "\\'")}', '${val.thumbnail}', '${val.streamUrl}')">Edit</button>
+                            <button class="del-btn" onclick="deleteMov('${key}')">Delete</button>
+                        </div>
+                    `;
+                    list.appendChild(item);
+                });
+            } else { list.innerHTML = "No movies."; }
+        });
+
+        // Global functions for HTML onclick
+        window.deleteMov = (key) => {
+            if(confirm("Delete this movie?")) {
+                remove(ref(db, 'movies/' + key));
+            }
+        }
+
+        window.startEdit = (key, title, thumb, stream) => {
+            // Fill form
+            editKeyIn.value = key;
+            titleIn.value = title;
+            thumbIn.value = thumb;
+            streamIn.value = stream;
+            
+            // Switch Buttons
+            document.getElementById('formTitle').innerText = "Edit Movie";
+            saveBtn.style.display = 'none';
+            updateBtn.style.display = 'block';
+            cancelBtn.style.display = 'block';
+            window.scrollTo(0,0);
+        };
+
+        function clearForm(){
+            titleIn.value = ''; thumbIn.value = ''; streamIn.value = ''; editKeyIn.value = '';
+        }
+        function resetButtons(){
+            document.getElementById('formTitle').innerText = "Add New Movie";
+            saveBtn.style.display = 'block';
+            updateBtn.style.display = 'none';
+            cancelBtn.style.display = 'none';
+        }
+        function showMsg(text, color){
+            msg.innerText = text; msg.style.color = color;
+            setTimeout(() => msg.innerText = "", 3000);
+        }
     </script>
 </body>
 </html>
