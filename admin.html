@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - ViralPX</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <img src="https://cdn.jsdelivr.net/gh/free-whiteboard-online/Free-Erasorio-Alternative-for-Collaborative-Design@8f20fe910c273b5ad2999092b114fb448543da14/uploads/2025-12-23T09-29-15-155Z-j5i7vzarb.png" alt="ViralPX Logo" class="logo">
+        <div class="site-name">ViralPX Admin</div>
+    </header>
+
+    <div class="container">
+        <h2 style="text-align: center;">Add New Movie</h2>
+        <div class="admin-form">
+            <input type="text" id="movieTitle" placeholder="Movie Name">
+            <input type="text" id="movieThumb" placeholder="Thumbnail URL (Image Link)">
+            <input type="text" id="movieStream" placeholder="Stream Link (From Telegram Bot)">
+            <button class="btn" id="addBtn">Add to Database</button>
+        </div>
+        <p id="status" style="text-align: center; color: lime;"></p>
+    </div>
+
+    <!-- Script Module -->
+    <script type="module">
+        import { db, ref, push, set } from './firebase-config.js';
+
+        document.getElementById('addBtn').addEventListener('click', () => {
+            const title = document.getElementById('movieTitle').value;
+            const thumb = document.getElementById('movieThumb').value;
+            const stream = document.getElementById('movieStream').value;
+            const status = document.getElementById('status');
+
+            if(title && thumb && stream) {
+                const moviesRef = ref(db, 'movies');
+                const newMovieRef = push(moviesRef);
+                
+                set(newMovieRef, {
+                    title: title,
+                    thumbnail: thumb,
+                    streamUrl: stream
+                }).then(() => {
+                    status.innerText = "Movie Added Successfully!";
+                    // Clear inputs
+                    document.getElementById('movieTitle').value = '';
+                    document.getElementById('movieThumb').value = '';
+                    document.getElementById('movieStream').value = '';
+                    
+                    setTimeout(() => status.innerText = "", 3000);
+                }).catch((error) => {
+                    status.style.color = 'red';
+                    status.innerText = "Error: " + error.message;
+                });
+            } else {
+                alert("Please fill all details!");
+            }
+        });
+    </script>
+</body>
+</html>
