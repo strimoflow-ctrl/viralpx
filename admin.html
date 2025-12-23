@@ -3,221 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Admin - ViralPX</title>
+    <title>ViralPX Admin</title>
     <style>
         body { background: #0f0f0f; color: #ddd; font-family: 'Segoe UI', sans-serif; padding: 20px; display: flex; justify-content: center; }
-        .container { width: 100%; max-width: 800px; }
+        .container { width: 100%; max-width: 900px; }
         
-        /* Login Styles */
-        #login-section {
-            max-width: 400px; margin: 100px auto; background: #1f1f1f; padding: 30px; 
-            border-radius: 10px; text-align: center; border: 1px solid #333;
-            box-shadow: 0 0 20px rgba(229, 9, 20, 0.2);
-        }
-        
-        /* Dashboard Styles (Hidden by default) */
+        #login-section { max-width: 400px; margin: 100px auto; background: #1f1f1f; padding: 30px; border-radius: 10px; text-align: center; border: 1px solid #333; }
         #dashboard-section { display: none; }
         
         .panel { background: #1f1f1f; padding: 20px; border-radius: 10px; border: 1px solid #333; margin-bottom: 30px; }
-        h2 { margin-top: 0; color: #E50914; }
-        
-        input { width: 100%; padding: 12px; margin: 10px 0; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 4px; box-sizing: border-box; }
-        
+        input { width: 100%; padding: 12px; margin: 5px 0 15px 0; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 4px; box-sizing: border-box; }
+        label { font-size: 12px; color: #aaa; text-transform: uppercase; font-weight: bold; }
+
         .btn-group { display: flex; gap: 10px; margin-top: 10px; }
-        button { padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px; }
-        
+        button { padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; flex: 1; }
         .primary-btn { background: #E50914; color: white; }
-        .primary-btn:hover { background: #f40612; }
-        
-        .logout-btn { background: #333; color: white; margin-bottom: 20px; width: auto; float: right; }
-        
-        .update-btn { background: #0088cc; color: white; display: none; }
-        .cancel-btn { background: #555; color: white; display: none; }
-        
-        /* List Styles */
         .list-item { display: flex; justify-content: space-between; align-items: center; background: #1a1a1a; padding: 10px; margin-bottom: 5px; border-radius: 4px; border-left: 3px solid #E50914; }
-        .list-info { display: flex; align-items: center; gap: 10px; }
-        .thumb-preview { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; }
-        .actions button { padding: 5px 10px; margin-left: 5px; font-size: 12px; width: auto; }
-        .edit-btn { background: #444; color: white; }
-        .del-btn { background: #990000; color: white; }
+        .list-info { display: flex; align-items: center; gap: 15px; flex: 1; }
+        .thumb-preview { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; }
+        .meta-info { font-size: 12px; color: #888; }
+        .views-badge { background: #333; padding: 2px 8px; border-radius: 10px; color: #4db8ff; font-size: 12px; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        
-        <!-- LOGIN SECTION -->
+        <!-- LOGIN -->
         <div id="login-section">
-            <img src="https://cdn.jsdelivr.net/gh/free-whiteboard-online/Free-Erasorio-Alternative-for-Collaborative-Design@8f20fe910c273b5ad2999092b114fb448543da14/uploads/2025-12-23T09-29-15-155Z-j5i7vzarb.png" style="height: 60px; margin-bottom: 20px;">
             <h2>Admin Login</h2>
-            <input type="email" id="email" placeholder="Admin Email">
+            <input type="email" id="email" placeholder="Email">
             <input type="password" id="password" placeholder="Password">
             <button class="primary-btn" id="loginBtn">Login</button>
-            <p id="loginMsg" style="color: red; margin-top: 10px;"></p>
         </div>
 
-        <!-- DASHBOARD SECTION -->
+        <!-- DASHBOARD -->
         <div id="dashboard-section">
-            <div style="overflow: hidden;">
-                <h2 style="float: left;">Admin Dashboard</h2>
-                <button class="logout-btn" id="logoutBtn">Logout</button>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h2>Dashboard</h2>
+                <button onclick="logout()" style="background:#333; color:white; width:auto; padding:5px 15px;">Logout</button>
             </div>
 
-            <!-- Form Area -->
             <div class="panel">
-                <h3 id="formTitle" style="margin-top:0;">Add New Movie</h3>
+                <h3 id="formTitle">Add Movie</h3>
                 <input type="hidden" id="editKey">
-                <input type="text" id="mTitle" placeholder="Movie Title">
-                <input type="text" id="mThumb" placeholder="Thumbnail Image URL">
-                <input type="text" id="mStream" placeholder="Stream URL (Render/Bot Link)">
                 
+                <label>Movie Title</label>
+                <input type="text" id="mTitle" placeholder="Ex: Avengers Endgame">
+                
+                <label>Thumbnail URL</label>
+                <input type="text" id="mThumb" placeholder="https://...">
+                
+                <label>Stream URL</label>
+                <input type="text" id="mStream" placeholder="https://...">
+
+                <label>Sort Order (1 = Top, 2 = Second...)</label>
+                <input type="number" id="mOrder" placeholder="Ex: 1" value="999">
+
                 <div class="btn-group">
-                    <button class="primary-btn" id="saveBtn">Add Movie</button>
-                    <button class="update-btn" id="updateBtn">Update Movie</button>
-                    <button class="cancel-btn" id="cancelBtn">Cancel</button>
+                    <button class="primary-btn" id="saveBtn">Save Movie</button>
+                    <button style="background:#555; color:white; display:none;" id="cancelBtn">Cancel</button>
                 </div>
                 <p id="msg" style="text-align: center; margin-top: 10px;"></p>
             </div>
 
-            <!-- List Area -->
-            <h3>Movie List</h3>
+            <h3>Movie List (Sorted by Order)</h3>
             <div id="movieList">Loading...</div>
         </div>
-
     </div>
 
     <script type="module">
-        import { 
-            db, ref, push, set, onValue, remove, update, 
-            auth, signInWithEmailAndPassword, signOut, onAuthStateChanged 
-        } from './firebase-config.js';
+        import { db, ref, push, set, onValue, remove, update, auth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from './firebase-config.js';
 
-        // --- AUTHENTICATION LOGIC ---
-        const loginSec = document.getElementById('login-section');
-        const dashSec = document.getElementById('dashboard-section');
-        const loginBtn = document.getElementById('loginBtn');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const loginMsg = document.getElementById('loginMsg');
-
-        // Check Login Status automatically
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                // User is signed in
-                loginSec.style.display = 'none';
-                dashSec.style.display = 'block';
-                loadMovies(); // Movies tabhi load karo jab login ho
-            } else {
-                // User is signed out
-                loginSec.style.display = 'block';
-                dashSec.style.display = 'none';
-            }
+        // Auth Logic
+        onAuthStateChanged(auth, user => {
+            document.getElementById('login-section').style.display = user ? 'none' : 'block';
+            document.getElementById('dashboard-section').style.display = user ? 'block' : 'none';
         });
 
-        // Login Button Click
-        loginBtn.addEventListener('click', () => {
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('password').value;
-            loginMsg.innerText = "Checking...";
-
-            signInWithEmailAndPassword(auth, email, pass)
-                .then(() => {
-                    loginMsg.innerText = "";
-                })
-                .catch((error) => {
-                    loginMsg.innerText = "Error: " + error.message;
-                });
+        document.getElementById('loginBtn').addEventListener('click', () => {
+            signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value)
+            .catch(e => alert(e.message));
         });
+        window.logout = () => signOut(auth);
 
-        // Logout Button Click
-        logoutBtn.addEventListener('click', () => {
-            signOut(auth).then(() => {
-                alert("Logged Out Successfully");
-            });
-        });
-
-        // --- DATABASE LOGIC (Only runs after login) ---
-        const titleIn = document.getElementById('mTitle');
-        const thumbIn = document.getElementById('mThumb');
-        const streamIn = document.getElementById('mStream');
-        const editKeyIn = document.getElementById('editKey');
-        const msg = document.getElementById('msg');
-        const saveBtn = document.getElementById('saveBtn');
-        const updateBtn = document.getElementById('updateBtn');
-        const cancelBtn = document.getElementById('cancelBtn');
-
-        function loadMovies() {
-            onValue(ref(db, 'movies'), (snap) => {
-                const list = document.getElementById('movieList');
-                list.innerHTML = "";
-                const data = snap.val();
-                
-                if(data){
-                    Object.entries(data).reverse().forEach(([key, val]) => {
-                        const item = document.createElement('div');
-                        item.className = 'list-item';
-                        item.innerHTML = `
-                            <div class="list-info">
-                                <img src="${val.thumbnail}" class="thumb-preview">
-                                <span>${val.title}</span>
-                            </div>
-                            <div class="actions">
-                                <button class="edit-btn" onclick="window.startEdit('${key}', '${val.title.replace(/'/g, "\\'")}', '${val.thumbnail}', '${val.streamUrl}')">Edit</button>
-                                <button class="del-btn" onclick="window.deleteMov('${key}')">Delete</button>
-                            </div>
-                        `;
-                        list.appendChild(item);
-                    });
-                } else { list.innerHTML = "No movies."; }
-            });
-        }
-
-        // Add Movie
-        saveBtn.addEventListener('click', () => {
-            if(titleIn.value && thumbIn.value && streamIn.value){
-                push(ref(db, 'movies'), {
-                    title: titleIn.value,
-                    thumbnail: thumbIn.value,
-                    streamUrl: streamIn.value
-                }).then(() => showMsg("Added!", "lime"))
-                  .catch((err) => showMsg(err.message, "red"));
-            } else { showMsg("Fill all fields", "red"); }
-        });
-
-        // Update Movie
-        updateBtn.addEventListener('click', () => {
-            const key = editKeyIn.value;
-            if(key){
-                update(ref(db, 'movies/' + key), {
-                    title: titleIn.value,
-                    thumbnail: thumbIn.value,
-                    streamUrl: streamIn.value
-                }).then(() => {
-                    clearForm();
-                    resetButtons();
-                    showMsg("Updated!", "lime");
-                });
-            }
-        });
-
-        cancelBtn.addEventListener('click', () => { clearForm(); resetButtons(); });
-
-        // Global Helpers
-        window.deleteMov = (key) => {
-            if(confirm("Delete this movie?")) remove(ref(db, 'movies/' + key));
-        }
-
-        window.startEdit = (key, title, thumb, stream) => {
-            editKeyIn.value = key; titleIn.value = title; thumbIn.value = thumb; streamIn.value = stream;
-            document.getElementById('formTitle').innerText = "Edit Movie";
-            saveBtn.style.display = 'none'; updateBtn.style.display = 'block'; cancelBtn.style.display = 'block';
-            window.scrollTo(0,0);
+        // CRUD Logic
+        const inputs = {
+            t: document.getElementById('mTitle'),
+            th: document.getElementById('mThumb'),
+            s: document.getElementById('mStream'),
+            o: document.getElementById('mOrder'),
+            k: document.getElementById('editKey')
         };
 
-        function clearForm(){ titleIn.value = ''; thumbIn.value = ''; streamIn.value = ''; editKeyIn.value = ''; }
-        function resetButtons(){ document.getElementById('formTitle').innerText = "Add New Movie"; saveBtn.style.display = 'block'; updateBtn.style.display = 'none'; cancelBtn.style.display = 'none'; }
-        function showMsg(text, color){ msg.innerText = text; msg.style.color = color; setTimeout(() => msg.innerText = "", 3000); }
+        // Save / Update
+        document.getElementById('saveBtn').addEventListener('click', () => {
+            if(!inputs.t.value || !inputs.s.value) return alert("Title and Link required");
+            
+            const data = {
+                title: inputs.t.value,
+                thumbnail: inputs.th.value,
+                streamUrl: inputs.s.value,
+                order: Number(inputs.o.value),
+                views: 0 // Default views
+            };
 
+            // Agar edit kar rahe hain to views reset mat karo
+            if(inputs.k.value) {
+                delete data.views; // Existing views preserve honge
+                update(ref(db, 'movies/' + inputs.k.value), data).then(() => resetForm());
+            } else {
+                push(ref(db, 'movies'), data).then(() => resetForm());
+            }
+        });
+
+        document.getElementById('cancelBtn').addEventListener('click', resetForm);
+
+        // Load List
+        onValue(ref(db, 'movies'), (snap) => {
+            const list = document.getElementById('movieList');
+            list.innerHTML = "";
+            const data = snap.val();
+            
+            if(data){
+                // Convert to array and sort by Order Number
+                const arr = Object.entries(data).map(([k, v]) => ({key: k, ...v}));
+                arr.sort((a, b) => a.order - b.order);
+
+                arr.forEach(movie => {
+                    const item = document.createElement('div');
+                    item.className = 'list-item';
+                    item.innerHTML = `
+                        <div class="list-info">
+                            <span style="font-weight:bold; color:#E50914;">#${movie.order}</span>
+                            <img src="${movie.thumbnail}" class="thumb-preview">
+                            <div>
+                                <div>${movie.title}</div>
+                                <span class="views-badge">👁️ ${movie.views || 0} Views</span>
+                            </div>
+                        </div>
+                        <div>
+                            <button onclick="editMov('${movie.key}', '${movie.title.replace(/'/g, "\\'")}', '${movie.thumbnail}', '${movie.streamUrl}', ${movie.order})" style="background:#444; color:white; padding:5px 10px;">Edit</button>
+                            <button onclick="delMov('${movie.key}')" style="background:#900; color:white; padding:5px 10px;">Del</button>
+                        </div>
+                    `;
+                    list.appendChild(item);
+                });
+            }
+        });
+
+        // Helpers
+        window.editMov = (k, t, th, s, o) => {
+            inputs.k.value = k; inputs.t.value = t; inputs.th.value = th; inputs.s.value = s; inputs.o.value = o;
+            document.getElementById('saveBtn').innerText = "Update Movie";
+            document.getElementById('cancelBtn').style.display = 'block';
+            window.scrollTo(0,0);
+        };
+        window.delMov = k => { if(confirm("Delete?")) remove(ref(db, 'movies/'+k)); };
+        
+        function resetForm() {
+            inputs.t.value = ''; inputs.th.value = ''; inputs.s.value = ''; inputs.o.value = '999'; inputs.k.value = '';
+            document.getElementById('saveBtn').innerText = "Save Movie";
+            document.getElementById('cancelBtn').style.display = 'none';
+        }
     </script>
 </body>
 </html>
