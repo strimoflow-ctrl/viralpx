@@ -1,12 +1,14 @@
 // firebase-config.js
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js";
 import { 
-    getDatabase, ref, set, push, onValue, remove, update 
+    getDatabase, ref, set, push, onValue, remove, update, get, child 
 } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-database.js";
 import { 
     getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged 
 } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js";
 
+// Apni purani Config yahan paste karna mat bhoolna!
 const firebaseConfig = {
   apiKey: "AIzaSyBzqgS3yJfKIOCu7QxFIoNce1J7miF-2tc",
   authDomain: "viralpx-f50e8.firebaseapp.com",
@@ -21,4 +23,5 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const auth = getAuth(app);
 
-export { db, ref, set, push, onValue, remove, update, auth, signInWithEmailAndPassword, signOut, onAuthStateChanged };
+// "get" aur "child" ab export list mein hain
+export { db, ref, set, push, onValue, remove, update, get, child, auth, signInWithEmailAndPassword, signOut, onAuthStateChanged };
