@@ -3,82 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Watching - ViralPX</title>
+    <title>Watching...</title>
     <style>
-        body {
-            background-color: #000; /* Theater Mode Black */
-            color: white;
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
+        body { 
+            background: black; margin: 0; color: white; 
+            font-family: sans-serif; height: 100vh; display: flex; flex-direction: column;
+            user-select: none; /* Text selection disabled */
         }
-        header {
-            padding: 15px 20px;
-            background-color: #1f1f1f;
-            display: flex;
-            align-items: center;
-        }
-        .back-btn {
-            background: #e50914;
-            color: white;
-            text-decoration: none;
-            padding: 8px 15px;
-            border-radius: 4px;
-            font-weight: bold;
-            margin-right: 15px;
-        }
-        .video-container {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        
+        .header { padding: 15px; display: flex; justify-content: space-between; align-items: center; background: #111; }
+        .back-btn { color: white; text-decoration: none; font-weight: bold; background: #333; padding: 5px 15px; border-radius: 4px; }
+        
+        .player-wrapper { 
+            flex: 1; display: flex; justify-content: center; align-items: center; background: #000; 
             flex-direction: column;
         }
-        video {
-            width: 90%;
-            max-width: 1000px;
-            border: 2px solid #333;
-            box-shadow: 0 0 30px rgba(229, 9, 20, 0.3);
-            background: black;
+        
+        /* Video Styling */
+        video { 
+            width: 100%; max-width: 1000px; max-height: 80vh; 
+            outline: none; background: #000; 
+            box-shadow: 0 0 50px rgba(255,255,255,0.1);
         }
-        h1 { margin-top: 20px; font-size: 22px; }
+
+        .info-area { text-align: center; margin-top: 15px; }
+        .tg-link { color: #0088cc; text-decoration: none; font-size: 14px; margin-top: 10px; display: inline-block; }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false;"> <!-- Right Click Disabled -->
 
-    <header>
-        <a href="index.html" class="back-btn">← Back to Home</a>
-        <span id="headerTitle">Playing Movie</span>
-    </header>
+    <div class="header">
+        <a href="index.html" class="back-btn">← Back</a>
+        <span style="color:#E50914; font-weight:bold;">ViralPX Player</span>
+    </div>
 
-    <div class="video-container">
-        <video id="videoPlayer" controls autoplay>
-            <source src="" type="video/mp4">
-            Your browser does not support the video tag.
+    <div class="player-wrapper">
+        <!-- controlsList="nodownload" download button ko hide karega -->
+        <video id="vid" controls autoplay controlsList="nodownload">
+            Your browser does not support video.
         </video>
-        <h1 id="movieTitle">Loading...</h1>
+        
+        <div class="info-area">
+            <h2 id="mTitle">Loading...</h2>
+            <a href="https://t.me/viralpx" target="_blank" class="tg-link">Join our Telegram Channel</a>
+        </div>
     </div>
 
     <script>
-        // URL se data nikalne ka logic
         const params = new URLSearchParams(window.location.search);
-        const title = params.get('title');
-        const src = params.get('src');
+        const title = params.get('t');
+        const src = params.get('s');
 
-        const player = document.getElementById('videoPlayer');
-        const titleDisplay = document.getElementById('movieTitle');
-        const headerDisplay = document.getElementById('headerTitle');
-
-        if (src) {
-            player.src = src;
-            titleDisplay.innerText = title || "Unknown Movie";
-            headerDisplay.innerText = "Watching: " + (title || "Unknown");
+        if(src) {
+            document.getElementById('vid').src = src;
+            document.getElementById('mTitle').innerText = title || "Unknown Title";
         } else {
-            titleDisplay.innerText = "Error: No video source found.";
+            alert("No video source found!");
+            window.location.href = "index.html";
         }
     </script>
-
 </body>
 </html>
