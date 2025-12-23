@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watching - ViralPX</title>
+    <style>
+        body {
+            background-color: #000; /* Theater Mode Black */
+            color: white;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        header {
+            padding: 15px 20px;
+            background-color: #1f1f1f;
+            display: flex;
+            align-items: center;
+        }
+        .back-btn {
+            background: #e50914;
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        .video-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        video {
+            width: 90%;
+            max-width: 1000px;
+            border: 2px solid #333;
+            box-shadow: 0 0 30px rgba(229, 9, 20, 0.3);
+            background: black;
+        }
+        h1 { margin-top: 20px; font-size: 22px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="back-btn">← Back to Home</a>
+        <span id="headerTitle">Playing Movie</span>
+    </header>
+
+    <div class="video-container">
+        <video id="videoPlayer" controls autoplay>
+            <source src="" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <h1 id="movieTitle">Loading...</h1>
+    </div>
+
+    <script>
+        // URL se data nikalne ka logic
+        const params = new URLSearchParams(window.location.search);
+        const title = params.get('title');
+        const src = params.get('src');
+
+        const player = document.getElementById('videoPlayer');
+        const titleDisplay = document.getElementById('movieTitle');
+        const headerDisplay = document.getElementById('headerTitle');
+
+        if (src) {
+            player.src = src;
+            titleDisplay.innerText = title || "Unknown Movie";
+            headerDisplay.innerText = "Watching: " + (title || "Unknown");
+        } else {
+            titleDisplay.innerText = "Error: No video source found.";
+        }
+    </script>
+
+</body>
+</html>
