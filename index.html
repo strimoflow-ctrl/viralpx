@@ -6,84 +6,103 @@
     <title>ViralPX - Home</title>
     <style>
         :root { --primary: #E50914; --dark: #141414; }
-        body { background-color: var(--dark); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; }
+        body { background-color: var(--dark); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 50px; }
         
-        header { padding: 15px 5%; background: linear-gradient(to bottom, black, transparent); position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
-        .logo { font-size: 24px; font-weight: 800; color: var(--primary); text-transform: uppercase; }
-        
-        /* Search Bar */
-        .search-box { background: #333; border: none; padding: 8px 15px; border-radius: 20px; color: white; width: 200px; outline: none; }
-        
+        /* Header */
+        header { padding: 15px 5%; background: linear-gradient(to bottom, #000, transparent); display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 28px; font-weight: 900; color: var(--primary); letter-spacing: 1px; text-transform: uppercase; }
+        .search-box { background: rgba(255,255,255,0.1); border: 1px solid #333; padding: 10px 15px; border-radius: 25px; color: white; outline: none; backdrop-filter: blur(5px); }
+
+        /* Grid System (1280x720 Optimized) */
         .container { padding: 20px 5%; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; margin-top: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; } /* Card size badha diya */
         
-        .card { background: #222; border-radius: 8px; overflow: hidden; text-decoration: none; color: white; transition: 0.3s; position: relative; display: block; }
-        .card:hover { transform: scale(1.03); z-index: 2; box-shadow: 0 10px 20px rgba(0,0,0,0.5); border: 2px solid var(--primary); }
-        .card img { width: 100%; height: 240px; object-fit: cover; }
-        .card-info { padding: 10px; }
-        .title { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .views { font-size: 11px; color: #888; margin-top: 5px; display: block; }
+        .card { background: #1f1f1f; border-radius: 8px; overflow: hidden; text-decoration: none; color: white; transition: 0.3s; position: relative; display: block; }
+        .card:hover { transform: scale(1.03); z-index: 2; box-shadow: 0 10px 30px rgba(229, 9, 20, 0.4); }
+        
+        /* THE MAGIC FIX FOR THUMBNAILS */
+        .card img { 
+            width: 100%; 
+            aspect-ratio: 16 / 9; /* Ye ratio 1280x720 ko perfect dikhayega */
+            object-fit: cover; 
+            display: block;
+        }
+        
+        .card-info { padding: 12px; }
+        .title { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .meta { font-size: 12px; color: #888; display: flex; justify-content: space-between; margin-top: 5px; }
+
+        /* AD SPACE CSS */
+        .ad-banner { width: 100%; max-width: 728px; height: 90px; background: #222; margin: 30px auto; display: flex; align-items: center; justify-content: center; color: #555; border: 1px dashed #444; border-radius: 8px; }
     </style>
 </head>
 <body>
 
     <header>
         <div class="logo">ViralPX</div>
-        <input type="text" id="searchInput" class="search-box" placeholder="Search movies...">
+        <input type="text" id="searchInput" class="search-box" placeholder="Search...">
     </header>
 
+    <!-- Top Ad Banner -->
     <div class="container">
-        <h2>🔥 Trending Movies</h2>
-        <div class="grid" id="movieGrid">Loading...</div>
+        <div class="ad-banner">
+            <!-- Yahan tum apna Banner Ad code paste kar sakte ho -->
+            <span>Ad Space (728x90)</span>
+        </div>
     </div>
+
+    <div class="container">
+        <h2 style="border-left: 5px solid var(--primary); padding-left: 15px;">Trending Now</h2>
+        <div class="grid" id="movieGrid">Loading content...</div>
+    </div>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+            .then(reg => console.log('Ad Service Worker Registered'))
+            .catch(err => console.log('SW Error:', err));
+        }
+    </script>
 
     <script type="module">
         import { db, ref, onValue } from './firebase-config.js';
         
         const grid = document.getElementById('movieGrid');
-        const searchInput = document.getElementById('searchInput');
         let allMovies = [];
 
         onValue(ref(db, 'movies'), (snapshot) => {
             const data = snapshot.val();
-            grid.innerHTML = "";
-            
             if(data){
-                // Convert to Array & Sort by Order
                 allMovies = Object.entries(data).map(([key, val]) => ({ key, ...val }));
-                
-                // Sorting Logic: Order (Ascending) -> Then Views (Descending)
                 allMovies.sort((a, b) => (a.order - b.order) || (b.views - a.views));
-                
                 renderMovies(allMovies);
-            } else {
-                grid.innerHTML = "<p>No movies added.</p>";
-            }
+            } else { grid.innerHTML = "<p>No movies yet.</p>"; }
         });
 
         function renderMovies(movies) {
             grid.innerHTML = "";
             movies.forEach(movie => {
                 const a = document.createElement('a');
-                a.className = 'card';
-                // IMPORTANT: Sending ID now
                 a.href = `player.html?id=${movie.key}`;
+                a.className = 'card';
                 a.innerHTML = `
                     <img src="${movie.thumbnail}" loading="lazy">
                     <div class="card-info">
                         <div class="title">${movie.title}</div>
-                        <span class="views">👁️ ${movie.views || 0} Views</span>
+                        <div class="meta">
+                            <span>HD Quality</span>
+                            <span>👁️ ${movie.views || 0}</span>
+                        </div>
                     </div>
                 `;
                 grid.appendChild(a);
             });
         }
 
-        // Search Functionality
-        searchInput.addEventListener('input', (e) => {
+        document.getElementById('searchInput').addEventListener('input', (e) => {
             const term = e.target.value.toLowerCase();
-            const filtered = allMovies.filter(m => m.title.toLowerCase().includes(term));
-            renderMovies(filtered);
+            renderMovies(allMovies.filter(m => m.title.toLowerCase().includes(term)));
         });
     </script>
 </body>
