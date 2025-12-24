@@ -1,115 +1,94 @@
+<!-- admin.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ViralPX Admin</title>
+    <title>Admin - ViralPX</title>
     <style>
         body { background: #0f0f0f; color: #ddd; font-family: 'Segoe UI', sans-serif; padding: 20px; display: flex; justify-content: center; }
         .container { width: 100%; max-width: 900px; }
-        
-        #login-section { max-width: 400px; margin: 100px auto; background: #1f1f1f; padding: 30px; border-radius: 10px; text-align: center; border: 1px solid #333; }
-        #dashboard-section { display: none; }
-        
         .panel { background: #1f1f1f; padding: 20px; border-radius: 10px; border: 1px solid #333; margin-bottom: 30px; }
-        input { width: 100%; padding: 12px; margin: 5px 0 15px 0; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 4px; box-sizing: border-box; }
+        input, textarea { width: 100%; padding: 12px; margin: 5px 0 15px 0; background: #2a2a2a; border: 1px solid #444; color: white; border-radius: 4px; box-sizing: border-box; }
+        textarea { height: 150px; resize: vertical; font-family: monospace; }
         label { font-size: 12px; color: #aaa; text-transform: uppercase; font-weight: bold; }
-
-        .btn-group { display: flex; gap: 10px; margin-top: 10px; }
-        button { padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; flex: 1; }
-        .primary-btn { background: #E50914; color: white; }
-        .list-item { display: flex; justify-content: space-between; align-items: center; background: #1a1a1a; padding: 10px; margin-bottom: 5px; border-radius: 4px; border-left: 3px solid #E50914; }
-        .list-info { display: flex; align-items: center; gap: 15px; flex: 1; }
-        .thumb-preview { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; }
-        .meta-info { font-size: 12px; color: #888; }
-        .views-badge { background: #333; padding: 2px 8px; border-radius: 10px; color: #4db8ff; font-size: 12px; }
+        .primary-btn { background: #E50914; color: white; padding: 12px; width: 100%; border: none; cursor: pointer; font-weight: bold; }
+        
+        .list-item { background: #1a1a1a; padding: 10px; margin-bottom: 5px; border-left: 3px solid #E50914; display: flex; justify-content: space-between; }
+        .del-btn { background: #900; color: white; border: none; padding: 5px 10px; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <!-- LOGIN -->
-        <div id="login-section">
-            <h2>Admin Login</h2>
-            <input type="email" id="email" placeholder="Email">
-            <input type="password" id="password" placeholder="Password">
-            <button class="primary-btn" id="loginBtn">Login</button>
+        <h2 style="text-align: center;">ViralPX Admin</h2>
+
+        <div class="panel">
+            <h3>Add / Edit Movie</h3>
+            <input type="hidden" id="editKey">
+            
+            <label>Movie Title</label>
+            <input type="text" id="mTitle" placeholder="Ex: Money Heist Season 1">
+            
+            <label>Thumbnail URL</label>
+            <input type="text" id="mThumb" placeholder="https://image-link.com...">
+            
+            <label>Stream Links (Format: Name | URL)</label>
+            <textarea id="mLinks" placeholder="Episode 1 | https://link1.com&#10;Episode 2 | https://link2.com&#10;Part 3 | https://link3.com"></textarea>
+            <small style="color: gray;">Note: Har naye part ke liye 'Enter' dabayein.</small>
+
+            <label>Sort Order</label>
+            <input type="number" id="mOrder" placeholder="1" value="999">
+
+            <button class="primary-btn" id="saveBtn">Save Movie</button>
+            <button id="cancelBtn" style="display:none; width:100%; margin-top:10px; padding:10px;">Cancel</button>
         </div>
 
-        <!-- DASHBOARD -->
-        <div id="dashboard-section">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h2>Dashboard</h2>
-                <button onclick="logout()" style="background:#333; color:white; width:auto; padding:5px 15px;">Logout</button>
-            </div>
-
-            <div class="panel">
-                <h3 id="formTitle">Add Movie</h3>
-                <input type="hidden" id="editKey">
-                
-                <label>Movie Title</label>
-                <input type="text" id="mTitle" placeholder="Ex: Avengers Endgame">
-                
-                <label>Thumbnail URL</label>
-                <input type="text" id="mThumb" placeholder="https://...">
-                
-                <label>Stream URL</label>
-                <input type="text" id="mStream" placeholder="https://...">
-
-                <label>Sort Order (1 = Top, 2 = Second...)</label>
-                <input type="number" id="mOrder" placeholder="Ex: 1" value="999">
-
-                <div class="btn-group">
-                    <button class="primary-btn" id="saveBtn">Save Movie</button>
-                    <button style="background:#555; color:white; display:none;" id="cancelBtn">Cancel</button>
-                </div>
-                <p id="msg" style="text-align: center; margin-top: 10px;"></p>
-            </div>
-
-            <h3>Movie List (Sorted by Order)</h3>
-            <div id="movieList">Loading...</div>
-        </div>
+        <h3>Existing Movies</h3>
+        <div id="movieList">Loading...</div>
     </div>
 
     <script type="module">
-        import { db, ref, push, set, onValue, remove, update, auth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from './firebase-config.js';
+        import { db, ref, push, set, onValue, remove, update } from './firebase-config.js';
 
-        // Auth Logic
-        onAuthStateChanged(auth, user => {
-            document.getElementById('login-section').style.display = user ? 'none' : 'block';
-            document.getElementById('dashboard-section').style.display = user ? 'block' : 'none';
-        });
-
-        document.getElementById('loginBtn').addEventListener('click', () => {
-            signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value)
-            .catch(e => alert(e.message));
-        });
-        window.logout = () => signOut(auth);
-
-        // CRUD Logic
         const inputs = {
             t: document.getElementById('mTitle'),
             th: document.getElementById('mThumb'),
-            s: document.getElementById('mStream'),
+            l: document.getElementById('mLinks'), // Changed to Textarea
             o: document.getElementById('mOrder'),
             k: document.getElementById('editKey')
         };
 
-        // Save / Update
+        // SAVE BUTTON LOGIC
         document.getElementById('saveBtn').addEventListener('click', () => {
-            if(!inputs.t.value || !inputs.s.value) return alert("Title and Link required");
+            if(!inputs.t.value || !inputs.l.value) return alert("Title and Links required");
+
+            // Process Links (Textarea to Array)
+            const rawLines = inputs.l.value.split('\n');
+            const parts = [];
             
+            rawLines.forEach(line => {
+                if(line.includes('|')) {
+                    const [name, url] = line.split('|');
+                    if(name && url) parts.push({ name: name.trim(), link: url.trim() });
+                } else if(line.trim() !== "") {
+                    // Agar bina '|' ke link dala hai to "Full Movie" maan lo
+                    parts.push({ name: "Full Movie", link: line.trim() });
+                }
+            });
+
+            if(parts.length === 0) return alert("Invalid Link Format! Use: Name | Link");
+
             const data = {
                 title: inputs.t.value,
                 thumbnail: inputs.th.value,
-                streamUrl: inputs.s.value,
+                episodes: parts, // New Array Structure
                 order: Number(inputs.o.value),
-                views: 0 // Default views
+                views: 0
             };
 
-            // Agar edit kar rahe hain to views reset mat karo
             if(inputs.k.value) {
-                delete data.views; // Existing views preserve honge
+                delete data.views; 
                 update(ref(db, 'movies/' + inputs.k.value), data).then(() => resetForm());
             } else {
                 push(ref(db, 'movies'), data).then(() => resetForm());
@@ -118,50 +97,43 @@
 
         document.getElementById('cancelBtn').addEventListener('click', resetForm);
 
-        // Load List
+        // LOAD LIST
         onValue(ref(db, 'movies'), (snap) => {
             const list = document.getElementById('movieList');
             list.innerHTML = "";
             const data = snap.val();
-            
             if(data){
-                // Convert to array and sort by Order Number
-                const arr = Object.entries(data).map(([k, v]) => ({key: k, ...v}));
-                arr.sort((a, b) => a.order - b.order);
-
-                arr.forEach(movie => {
-                    const item = document.createElement('div');
-                    item.className = 'list-item';
-                    item.innerHTML = `
-                        <div class="list-info">
-                            <span style="font-weight:bold; color:#E50914;">#${movie.order}</span>
-                            <img src="${movie.thumbnail}" class="thumb-preview">
-                            <div>
-                                <div>${movie.title}</div>
-                                <span class="views-badge">👁️ ${movie.views || 0} Views</span>
-                            </div>
-                        </div>
-                        <div>
-                            <button onclick="editMov('${movie.key}', '${movie.title.replace(/'/g, "\\'")}', '${movie.thumbnail}', '${movie.streamUrl}', ${movie.order})" style="background:#444; color:white; padding:5px 10px;">Edit</button>
-                            <button onclick="delMov('${movie.key}')" style="background:#900; color:white; padding:5px 10px;">Del</button>
-                        </div>
-                    `;
-                    list.appendChild(item);
+                Object.entries(data).reverse().forEach(([key, val]) => {
+                    const div = document.createElement('div');
+                    div.className = 'list-item';
+                    div.innerHTML = `<span>${val.title}</span> <button class="del-btn" onclick="delMov('${key}')">Delete</button>`;
+                    div.onclick = (e) => { if(e.target.className !== 'del-btn') editMov(key, val) };
+                    list.appendChild(div);
                 });
             }
         });
 
-        // Helpers
-        window.editMov = (k, t, th, s, o) => {
-            inputs.k.value = k; inputs.t.value = t; inputs.th.value = th; inputs.s.value = s; inputs.o.value = o;
+        window.delMov = k => { if(confirm("Delete?")) remove(ref(db, 'movies/'+k)); };
+        
+        window.editMov = (key, data) => {
+            inputs.k.value = key; inputs.t.value = data.title; inputs.th.value = data.thumbnail; inputs.o.value = data.order;
+            
+            // Convert Array back to Text format
+            let text = "";
+            if(data.episodes) {
+                data.episodes.forEach(p => text += `${p.name} | ${p.link}\n`);
+            } else if(data.streamUrl) {
+                text = `Full Movie | ${data.streamUrl}`; // Old data support
+            }
+            inputs.l.value = text.trim();
+
             document.getElementById('saveBtn').innerText = "Update Movie";
             document.getElementById('cancelBtn').style.display = 'block';
             window.scrollTo(0,0);
         };
-        window.delMov = k => { if(confirm("Delete?")) remove(ref(db, 'movies/'+k)); };
-        
+
         function resetForm() {
-            inputs.t.value = ''; inputs.th.value = ''; inputs.s.value = ''; inputs.o.value = '999'; inputs.k.value = '';
+            inputs.t.value = ''; inputs.th.value = ''; inputs.l.value = ''; inputs.o.value = '999'; inputs.k.value = '';
             document.getElementById('saveBtn').innerText = "Save Movie";
             document.getElementById('cancelBtn').style.display = 'none';
         }
