@@ -1,44 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
+<!-- player.html -->
+
+<!-- STEP 1: <head> ke andar se purana Monetag code delete kar do -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Watching...</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
+        /* ... Purani CSS same rahegi ... */
         body { background: #000; color: white; font-family: 'Segoe UI', sans-serif; margin: 0; min-height: 100vh; display: flex; flex-direction: column; }
-        
         .layout { display: flex; flex-wrap: wrap; max-width: 1200px; margin: 0 auto; width: 100%; padding-top: 10px; }
         .video-section { flex: 3; min-width: 300px; padding: 10px; }
         .playlist-section { flex: 1; min-width: 250px; background: #111; height: fit-content; max-height: 500px; overflow-y: auto; margin: 10px; border-radius: 8px; border: 1px solid #333; }
-
         video { width: 100%; aspect-ratio: 16/9; background: black; box-shadow: 0 0 20px rgba(255,255,255,0.05); }
-
-        /* REVENUE AD BLOCK */
-        .revenue-block {
-            width: 100%;
-            background: #111;
-            padding: 15px;
-            margin-top: 10px;
-            border-radius: 8px;
-            border: 1px solid #333;
-            text-align: center;
-            color: #444;
-            /* Agar ad code daloge to ye height auto ho jayegi */
-            min-height: 100px; 
-            display: flex; align-items: center; justify-content: center;
-        }
-
         .info { margin-top: 20px; }
         h1 { font-size: 22px; color: #fff; margin: 0; }
         .action-bar { display: flex; gap: 15px; margin-top: 10px; }
         .tg-btn { background: #0088cc; color: white; text-decoration: none; padding: 8px 15px; border-radius: 4px; font-weight: bold; font-size: 14px; }
-        
         .episode-btn { width: 100%; padding: 12px; background: transparent; border: none; color: #ccc; text-align: left; cursor: pointer; border-bottom: 1px solid #222; display: flex; gap: 10px; }
         .episode-btn:hover { background: #222; }
         .episode-btn.active { background: #222; color: #E50914; border-left: 3px solid #E50914; }
+
+        /* REVENUE BLOCK CSS */
+        .revenue-block {
+            width: 100%;
+            background: #111;
+            padding: 10px;
+            margin-top: 15px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            text-align: center;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
+        }
     </style>
 </head>
+
 <body oncontextmenu="return false;">
 
     <div style="background:#111; padding:10px 5%;">
@@ -49,12 +46,22 @@
         <div class="video-section">
             <video id="vid" controls autoplay controlsList="nodownload"></video>
             
-            <!-- $$$ ADVERTISEMENT AREA $$$ -->
+            <!-- $$$ ADSTERRA BANNER (Player Page) $$$ -->
             <div class="revenue-block">
-                <!-- PASTE YOUR BANNER AD CODE HERE -->
-                <span>Advertisment Area (Best for user attention)</span>
+                 <!-- STEP 2: Yahan Adsterra ka Code Paste Karo -->
+                 <script type="text/javascript">
+                    atOptions = {
+                        'key' : 'YAHAN_APNI_ADSTERRA_KEY_DALO', 
+                        'format' : 'iframe',
+                        'height' : 90,
+                        'width' : 728,
+                        'params' : {}
+                    };
+                </script>
+                <script type="text/javascript" src="//www.highperformanceformat.com/YAHAN_APNI_ADSTERRA_KEY_DALO/invoke.js"></script>
+                <!-- End Ad Code -->
             </div>
-            <!-- $$$ END AD AREA $$$ -->
+            <!-- $$$ END AD BANNER $$$ -->
 
             <div class="info">
                 <h1 id="mTitle">Loading...</h1>
@@ -63,7 +70,7 @@
                 </div>
                 <div class="action-bar">
                     <a href="https://t.me/viralpx" target="_blank" class="tg-btn">🚀 Join Telegram</a>
-                    <button class="tg-btn" style="background: #333;" onclick="shareVideo()">🔗 Share</button>
+                    <button class="tg-btn" style="background: #333;" onclick="navigator.clipboard.writeText(window.location.href); alert('Link Copied!');">🔗 Share</button>
                 </div>
             </div>
         </div>
@@ -74,44 +81,27 @@
         </div>
     </div>
 
-    <!-- Service Worker for Ads -->
-    <script>
-        if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
-        
-        function shareVideo() {
-            navigator.clipboard.writeText(window.location.href);
-            alert("Link Copied!");
-        }
-    </script>
-
+    <!-- Script Module (Same logic) -->
     <script type="module">
         import { db, ref, get, update, child } from './firebase-config.js';
-
         const params = new URLSearchParams(window.location.search);
         const movieId = params.get('id');
         if(!movieId) window.location.href = 'index.html';
-
         let hls = null;
-
         get(child(ref(db), `movies/${movieId}`)).then((snapshot) => {
             if (snapshot.exists()) {
                 const movie = snapshot.val();
                 document.getElementById('mTitle').innerText = movie.title;
                 update(ref(db, `movies/${movieId}`), { views: (movie.views || 0) + 1 });
                 document.getElementById('mViews').innerText = `👁️ ${(movie.views || 0) + 1} Views`;
-
                 let episodes = movie.episodes || (movie.streamUrl ? [{ name: "Full Movie", link: movie.streamUrl }] : []);
-
                 if(episodes.length > 0) {
                     if(episodes.length > 1) document.getElementById('playlistBox').style.display = 'block';
-                    
                     const listContainer = document.getElementById('epList');
                     playEpisode(episodes[0].link, episodes[0].name, 0);
-
                     episodes.forEach((ep, index) => {
                         const btn = document.createElement('button');
-                        btn.className = 'episode-btn';
-                        btn.id = `ep-btn-${index}`;
+                        btn.className = 'episode-btn'; btn.id = `ep-btn-${index}`;
                         btn.innerHTML = `<span>▶</span> ${ep.name}`;
                         btn.onclick = () => playEpisode(ep.link, ep.name, index);
                         listContainer.appendChild(btn);
@@ -119,23 +109,14 @@
                 }
             }
         });
-
         window.playEpisode = (link, name, index) => {
             const video = document.getElementById('vid');
             document.getElementById('currentEpName').innerText = "Playing: " + name;
             document.querySelectorAll('.episode-btn').forEach(b => b.classList.remove('active'));
             if(document.getElementById(`ep-btn-${index}`)) document.getElementById(`ep-btn-${index}`).classList.add('active');
-
             if (Hls.isSupported() && link.includes('.m3u8')) {
-                if(hls) hls.destroy();
-                hls = new Hls();
-                hls.loadSource(link);
-                hls.attachMedia(video);
-                hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
-            } else {
-                video.src = link;
-                video.play();
-            }
+                if(hls) hls.destroy(); hls = new Hls(); hls.loadSource(link); hls.attachMedia(video); hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
+            } else { video.src = link; video.play(); }
         }
     </script>
 </body>
