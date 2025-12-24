@@ -1,16 +1,16 @@
-<!-- player.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Watching...</title>
+    <!-- HLS.js Library (Zaroori hai .m3u8 ke liye) -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    
     <style>
         body { background: #000; color: white; font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; flex-direction: column; min-height: 100vh; }
         
-        /* Layout Grid */
         .layout { display: flex; flex-wrap: wrap; max-width: 1200px; margin: 0 auto; width: 100%; padding-top: 10px; }
-        
         .video-section { flex: 3; min-width: 300px; padding: 10px; }
         .playlist-section { flex: 1; min-width: 250px; background: #111; height: fit-content; max-height: 500px; overflow-y: auto; margin: 10px; border-radius: 8px; border: 1px solid #333; }
 
@@ -43,9 +43,8 @@
     <a href="index.html" class="back-btn">← Back to Home</a>
 
     <div class="layout">
-        <!-- Video Player -->
         <div class="video-section">
-            <video id="vid" controls autoplay controlsList="nodownload">Your browser does not support video.</video>
+            <video id="vid" controls autoplay controlsList="nodownload"></video>
             <div class="info">
                 <h1 id="mTitle">Loading...</h1>
                 <span class="views" id="mViews">...</span>
@@ -54,7 +53,6 @@
             </div>
         </div>
 
-        <!-- Playlist Sidebar -->
         <div class="playlist-section" id="playlistBox" style="display:none;">
             <div class="playlist-header">Episodes / Parts</div>
             <div id="epList"></div>
@@ -74,33 +72,28 @@
                 const movie = snapshot.val();
                 document.getElementById('mTitle').innerText = movie.title;
                 
-                // Update Views
+                // Views Update
                 const newViews = (movie.views || 0) + 1;
                 update(ref(db, `movies/${movieId}`), { views: newViews });
                 document.getElementById('mViews').innerText = `👁️ ${newViews} Views`;
 
-                // --- DATA HANDLING (Old vs New Format) ---
+                // Data Parsing
                 let episodes = [];
-                
                 if (movie.episodes) {
-                    episodes = movie.episodes; // New Format
+                    episodes = movie.episodes;
                 } else if (movie.streamUrl) {
-                    episodes = [{ name: "Full Movie", link: movie.streamUrl }]; // Old Format Support
+                    episodes = [{ name: "Full Movie", link: movie.streamUrl }];
                 }
 
-                // Render Playlist
+                // Playlist Render
                 if(episodes.length > 0) {
-                    // Agar 1 se zyada parts hain to playlist dikhao
                     if(episodes.length > 1) document.getElementById('playlistBox').style.display = 'block';
 
                     const listContainer = document.getElementById('epList');
-                    const player = document.getElementById('vid');
-                    const epTitle = document.getElementById('currentEpName');
-
-                    // Default Play First Part
+                    
+                    // Play First Episode
                     playEpisode(episodes[0].link, episodes[0].name, 0);
 
-                    // Create Buttons
                     episodes.forEach((ep, index) => {
                         const btn = document.createElement('button');
                         btn.className = 'episode-btn';
@@ -109,25 +102,52 @@
                         btn.onclick = () => playEpisode(ep.link, ep.name, index);
                         listContainer.appendChild(btn);
                     });
-
-                    function playEpisode(link, name, index) {
-                        player.src = link;
-                        player.play();
-                        epTitle.innerText = "Playing: " + name;
-
-                        // Highlight Active Button
-                        document.querySelectorAll('.episode-btn').forEach(b => b.classList.remove('active'));
-                        const activeBtn = document.getElementById(`ep-btn-${index}`);
-                        if(activeBtn) activeBtn.classList.add('active');
-                    }
                 } else {
-                    alert("No links found for this movie.");
+                    alert("No links found.");
                 }
 
             } else {
                 alert("Movie not found.");
             }
         });
+
+        // --- HLS & MP4 HYBRID PLAYER LOGIC ---
+        let hls = null; // Global HLS object
+
+        window.playEpisode = (link, name, index) => {
+            const video = document.getElementById('vid');
+            const epTitle = document.getElementById('currentEpName');
+            epTitle.innerText = "Playing: " + name;
+
+            // Highlight Active Button
+            document.querySelectorAll('.episode-btn').forEach(b => b.classList.remove('active'));
+            const activeBtn = document.getElementById(`ep-btn-${index}`);
+            if(activeBtn) activeBtn.classList.add('active');
+
+            // --- Check for .m3u8 ---
+            if (Hls.isSupported() && link.includes('.m3u8')) {
+                // Agar purana HLS chal raha hai to destroy karo
+                if(hls) { hls.destroy(); }
+                
+                hls = new Hls();
+                hls.loadSource(link);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                    video.play();
+                });
+            } 
+            // Safari (iPhone/Mac) native support
+            else if (video.canPlayType('application/vnd.apple.mpegurl') && link.includes('.m3u8')) {
+                video.src = link;
+                video.play();
+            } 
+            // Normal MP4 / WebM
+            else {
+                if(hls) { hls.destroy(); } // Cleanup
+                video.src = link;
+                video.play();
+            }
+        }
     </script>
 </body>
 </html>
