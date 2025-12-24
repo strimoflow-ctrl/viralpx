@@ -1,3 +1,4 @@
+<!-- player.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,100 +6,126 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Watching...</title>
     <style>
-        body { background: #000; color: white; font-family: 'Segoe UI', sans-serif; margin: 0; }
+        body { background: #000; color: white; font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; flex-direction: column; min-height: 100vh; }
         
-        .main-player { width: 100%; max-width: 1000px; margin: 0 auto; padding-top: 20px; }
-        video { width: 100%; border: 1px solid #333; box-shadow: 0 0 50px rgba(255,0,0,0.1); }
+        /* Layout Grid */
+        .layout { display: flex; flex-wrap: wrap; max-width: 1200px; margin: 0 auto; width: 100%; padding-top: 10px; }
         
-        .info { padding: 20px; }
-        .info h1 { margin: 0; font-size: 22px; color: #E50914; }
-        .info p { color: #aaa; font-size: 14px; margin-top: 5px; }
+        .video-section { flex: 3; min-width: 300px; padding: 10px; }
+        .playlist-section { flex: 1; min-width: 250px; background: #111; height: fit-content; max-height: 500px; overflow-y: auto; margin: 10px; border-radius: 8px; border: 1px solid #333; }
 
-        .suggestions { padding: 20px; max-width: 1000px; margin: 0 auto; }
-        .suggestions h3 { border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
+        video { width: 100%; aspect-ratio: 16/9; background: black; border: 1px solid #333; }
         
-        .s-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
-        .s-card { text-decoration: none; color: white; background: #111; border-radius: 5px; overflow: hidden; display: block; }
-        .s-card img { width: 100%; height: 100px; object-fit: cover; }
-        .s-title { padding: 8px; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .info { margin-top: 15px; }
+        h1 { font-size: 20px; color: #E50914; margin: 0; }
+        .views { color: #888; font-size: 13px; }
 
-        .back-btn { display: inline-block; padding: 10px 20px; color: white; text-decoration: none; font-weight: bold; }
+        /* Playlist Styles */
+        .playlist-header { padding: 15px; background: #1f1f1f; font-weight: bold; border-bottom: 1px solid #333; }
+        .episode-btn { 
+            display: flex; align-items: center; gap: 10px;
+            width: 100%; padding: 12px; background: transparent; border: none; 
+            color: #ccc; text-align: left; cursor: pointer; border-bottom: 1px solid #222; 
+        }
+        .episode-btn:hover { background: #222; color: white; }
+        .episode-btn.active { background: #333; color: #E50914; border-left: 3px solid #E50914; }
+        
+        .back-btn { display: inline-block; padding: 10px; color: white; text-decoration: none; background: #222; width: 100%; text-align: center; }
+
+        @media (max-width: 768px) {
+            .layout { flex-direction: column; }
+            .playlist-section { width: auto; max-height: 300px; }
+        }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
     <a href="index.html" class="back-btn">← Back to Home</a>
 
-    <div class="main-player">
-        <video id="vid" controls autoplay controlsList="nodownload">
-            Your browser does not support video.
-        </video>
-        <div class="info">
-            <h1 id="mTitle">Loading...</h1>
-            <p id="mViews">Waiting for data...</p>
-            <a href="https://t.me/viralpx" target="_blank" style="color:#0088cc; text-decoration:none;">🚀 Join Telegram Channel</a>
+    <div class="layout">
+        <!-- Video Player -->
+        <div class="video-section">
+            <video id="vid" controls autoplay controlsList="nodownload">Your browser does not support video.</video>
+            <div class="info">
+                <h1 id="mTitle">Loading...</h1>
+                <span class="views" id="mViews">...</span>
+                <p id="currentEpName" style="color: #aaa; margin-top:5px; font-size: 14px;"></p>
+                <a href="https://t.me/viralpx" target="_blank" style="color:#0088cc; display:block; margin-top:10px; text-decoration:none;">🚀 Join Telegram Channel</a>
+            </div>
+        </div>
+
+        <!-- Playlist Sidebar -->
+        <div class="playlist-section" id="playlistBox" style="display:none;">
+            <div class="playlist-header">Episodes / Parts</div>
+            <div id="epList"></div>
         </div>
     </div>
 
-    <div class="suggestions">
-        <h3>More Like This</h3>
-        <div class="s-grid" id="suggestGrid"></div>
-    </div>
-
     <script type="module">
-        import { db, ref, get, update, onValue } from './firebase-config.js';
+        import { db, ref, get, update, child } from './firebase-config.js';
 
         const params = new URLSearchParams(window.location.search);
-        const movieId = params.get('id'); // Getting ID from URL
+        const movieId = params.get('id');
 
         if(!movieId) window.location.href = 'index.html';
 
-        // 1. Load Current Movie & Update Views
-        const movieRef = ref(db, `movies/${movieId}`);
-        
-        get(movieRef).then((snapshot) => {
+        get(child(ref(db), `movies/${movieId}`)).then((snapshot) => {
             if (snapshot.exists()) {
                 const movie = snapshot.val();
-                
-                // Set Player
-                document.getElementById('vid').src = movie.streamUrl;
                 document.getElementById('mTitle').innerText = movie.title;
                 
-                // Update Views Count (+1)
+                // Update Views
                 const newViews = (movie.views || 0) + 1;
-                update(movieRef, { views: newViews });
+                update(ref(db, `movies/${movieId}`), { views: newViews });
                 document.getElementById('mViews').innerText = `👁️ ${newViews} Views`;
 
-            } else {
-                alert("Movie not found!");
-                window.location.href = 'index.html';
-            }
-        });
+                // --- DATA HANDLING (Old vs New Format) ---
+                let episodes = [];
+                
+                if (movie.episodes) {
+                    episodes = movie.episodes; // New Format
+                } else if (movie.streamUrl) {
+                    episodes = [{ name: "Full Movie", link: movie.streamUrl }]; // Old Format Support
+                }
 
-        // 2. Load Suggestions (Index ki tarah)
-        const suggestGrid = document.getElementById('suggestGrid');
-        
-        onValue(ref(db, 'movies'), (snap) => {
-            const data = snap.val();
-            suggestGrid.innerHTML = "";
-            
-            if(data){
-                const all = Object.entries(data).map(([k, v]) => ({key: k, ...v}));
-                
-                // Filter: Jo abhi play ho rahi hai usko list me mat dikhao
-                const filtered = all.filter(m => m.key !== movieId);
-                
-                // Randomly shuffle or limit suggestions (Optional, showing first 10 here)
-                filtered.slice(0, 12).forEach(m => {
-                    const a = document.createElement('a');
-                    a.href = `player.html?id=${m.key}`; // Link with ID
-                    a.className = 's-card';
-                    a.innerHTML = `
-                        <img src="${m.thumbnail}">
-                        <div class="s-title">${m.title}</div>
-                    `;
-                    suggestGrid.appendChild(a);
-                });
+                // Render Playlist
+                if(episodes.length > 0) {
+                    // Agar 1 se zyada parts hain to playlist dikhao
+                    if(episodes.length > 1) document.getElementById('playlistBox').style.display = 'block';
+
+                    const listContainer = document.getElementById('epList');
+                    const player = document.getElementById('vid');
+                    const epTitle = document.getElementById('currentEpName');
+
+                    // Default Play First Part
+                    playEpisode(episodes[0].link, episodes[0].name, 0);
+
+                    // Create Buttons
+                    episodes.forEach((ep, index) => {
+                        const btn = document.createElement('button');
+                        btn.className = 'episode-btn';
+                        btn.id = `ep-btn-${index}`;
+                        btn.innerHTML = `<span>▶</span> ${ep.name}`;
+                        btn.onclick = () => playEpisode(ep.link, ep.name, index);
+                        listContainer.appendChild(btn);
+                    });
+
+                    function playEpisode(link, name, index) {
+                        player.src = link;
+                        player.play();
+                        epTitle.innerText = "Playing: " + name;
+
+                        // Highlight Active Button
+                        document.querySelectorAll('.episode-btn').forEach(b => b.classList.remove('active'));
+                        const activeBtn = document.getElementById(`ep-btn-${index}`);
+                        if(activeBtn) activeBtn.classList.add('active');
+                    }
+                } else {
+                    alert("No links found for this movie.");
+                }
+
+            } else {
+                alert("Movie not found.");
             }
         });
     </script>
