@@ -4,94 +4,108 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Watching...</title>
-    <!-- HLS.js Library (Zaroori hai .m3u8 ke liye) -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    
     <style>
-        body { background: #000; color: white; font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; flex-direction: column; min-height: 100vh; }
+        body { background: #000; color: white; font-family: 'Segoe UI', sans-serif; margin: 0; min-height: 100vh; display: flex; flex-direction: column; }
         
         .layout { display: flex; flex-wrap: wrap; max-width: 1200px; margin: 0 auto; width: 100%; padding-top: 10px; }
         .video-section { flex: 3; min-width: 300px; padding: 10px; }
         .playlist-section { flex: 1; min-width: 250px; background: #111; height: fit-content; max-height: 500px; overflow-y: auto; margin: 10px; border-radius: 8px; border: 1px solid #333; }
 
-        video { width: 100%; aspect-ratio: 16/9; background: black; border: 1px solid #333; }
-        
-        .info { margin-top: 15px; }
-        h1 { font-size: 20px; color: #E50914; margin: 0; }
-        .views { color: #888; font-size: 13px; }
+        video { width: 100%; aspect-ratio: 16/9; background: black; box-shadow: 0 0 20px rgba(255,255,255,0.05); }
 
-        /* Playlist Styles */
-        .playlist-header { padding: 15px; background: #1f1f1f; font-weight: bold; border-bottom: 1px solid #333; }
-        .episode-btn { 
-            display: flex; align-items: center; gap: 10px;
-            width: 100%; padding: 12px; background: transparent; border: none; 
-            color: #ccc; text-align: left; cursor: pointer; border-bottom: 1px solid #222; 
+        /* REVENUE AD BLOCK */
+        .revenue-block {
+            width: 100%;
+            background: #111;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            text-align: center;
+            color: #444;
+            /* Agar ad code daloge to ye height auto ho jayegi */
+            min-height: 100px; 
+            display: flex; align-items: center; justify-content: center;
         }
-        .episode-btn:hover { background: #222; color: white; }
-        .episode-btn.active { background: #333; color: #E50914; border-left: 3px solid #E50914; }
-        
-        .back-btn { display: inline-block; padding: 10px; color: white; text-decoration: none; background: #222; width: 100%; text-align: center; }
 
-        @media (max-width: 768px) {
-            .layout { flex-direction: column; }
-            .playlist-section { width: auto; max-height: 300px; }
-        }
+        .info { margin-top: 20px; }
+        h1 { font-size: 22px; color: #fff; margin: 0; }
+        .action-bar { display: flex; gap: 15px; margin-top: 10px; }
+        .tg-btn { background: #0088cc; color: white; text-decoration: none; padding: 8px 15px; border-radius: 4px; font-weight: bold; font-size: 14px; }
+        
+        .episode-btn { width: 100%; padding: 12px; background: transparent; border: none; color: #ccc; text-align: left; cursor: pointer; border-bottom: 1px solid #222; display: flex; gap: 10px; }
+        .episode-btn:hover { background: #222; }
+        .episode-btn.active { background: #222; color: #E50914; border-left: 3px solid #E50914; }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
-    <a href="index.html" class="back-btn">← Back to Home</a>
+    <div style="background:#111; padding:10px 5%;">
+        <a href="index.html" style="color:#aaa; text-decoration:none;">← Back to Home</a>
+    </div>
 
     <div class="layout">
         <div class="video-section">
             <video id="vid" controls autoplay controlsList="nodownload"></video>
+            
+            <!-- $$$ ADVERTISEMENT AREA $$$ -->
+            <div class="revenue-block">
+                <!-- PASTE YOUR BANNER AD CODE HERE -->
+                <span>Advertisment Area (Best for user attention)</span>
+            </div>
+            <!-- $$$ END AD AREA $$$ -->
+
             <div class="info">
                 <h1 id="mTitle">Loading...</h1>
-                <span class="views" id="mViews">...</span>
-                <p id="currentEpName" style="color: #aaa; margin-top:5px; font-size: 14px;"></p>
-                <a href="https://t.me/viralpx" target="_blank" style="color:#0088cc; display:block; margin-top:10px; text-decoration:none;">🚀 Join Telegram Channel</a>
+                <div style="color: #aaa; font-size: 13px; margin-top:5px;">
+                    <span id="mViews">...</span> | <span id="currentEpName">Movie</span>
+                </div>
+                <div class="action-bar">
+                    <a href="https://t.me/viralpx" target="_blank" class="tg-btn">🚀 Join Telegram</a>
+                    <button class="tg-btn" style="background: #333;" onclick="shareVideo()">🔗 Share</button>
+                </div>
             </div>
         </div>
 
         <div class="playlist-section" id="playlistBox" style="display:none;">
-            <div class="playlist-header">Episodes / Parts</div>
+            <div style="padding:15px; border-bottom:1px solid #333; font-weight:bold;">Episodes / Parts</div>
             <div id="epList"></div>
         </div>
     </div>
+
+    <!-- Service Worker for Ads -->
+    <script>
+        if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+        
+        function shareVideo() {
+            navigator.clipboard.writeText(window.location.href);
+            alert("Link Copied!");
+        }
+    </script>
 
     <script type="module">
         import { db, ref, get, update, child } from './firebase-config.js';
 
         const params = new URLSearchParams(window.location.search);
         const movieId = params.get('id');
-
         if(!movieId) window.location.href = 'index.html';
+
+        let hls = null;
 
         get(child(ref(db), `movies/${movieId}`)).then((snapshot) => {
             if (snapshot.exists()) {
                 const movie = snapshot.val();
                 document.getElementById('mTitle').innerText = movie.title;
-                
-                // Views Update
-                const newViews = (movie.views || 0) + 1;
-                update(ref(db, `movies/${movieId}`), { views: newViews });
-                document.getElementById('mViews').innerText = `👁️ ${newViews} Views`;
+                update(ref(db, `movies/${movieId}`), { views: (movie.views || 0) + 1 });
+                document.getElementById('mViews').innerText = `👁️ ${(movie.views || 0) + 1} Views`;
 
-                // Data Parsing
-                let episodes = [];
-                if (movie.episodes) {
-                    episodes = movie.episodes;
-                } else if (movie.streamUrl) {
-                    episodes = [{ name: "Full Movie", link: movie.streamUrl }];
-                }
+                let episodes = movie.episodes || (movie.streamUrl ? [{ name: "Full Movie", link: movie.streamUrl }] : []);
 
-                // Playlist Render
                 if(episodes.length > 0) {
                     if(episodes.length > 1) document.getElementById('playlistBox').style.display = 'block';
-
-                    const listContainer = document.getElementById('epList');
                     
-                    // Play First Episode
+                    const listContainer = document.getElementById('epList');
                     playEpisode(episodes[0].link, episodes[0].name, 0);
 
                     episodes.forEach((ep, index) => {
@@ -102,48 +116,23 @@
                         btn.onclick = () => playEpisode(ep.link, ep.name, index);
                         listContainer.appendChild(btn);
                     });
-                } else {
-                    alert("No links found.");
                 }
-
-            } else {
-                alert("Movie not found.");
             }
         });
 
-        // --- HLS & MP4 HYBRID PLAYER LOGIC ---
-        let hls = null; // Global HLS object
-
         window.playEpisode = (link, name, index) => {
             const video = document.getElementById('vid');
-            const epTitle = document.getElementById('currentEpName');
-            epTitle.innerText = "Playing: " + name;
-
-            // Highlight Active Button
+            document.getElementById('currentEpName').innerText = "Playing: " + name;
             document.querySelectorAll('.episode-btn').forEach(b => b.classList.remove('active'));
-            const activeBtn = document.getElementById(`ep-btn-${index}`);
-            if(activeBtn) activeBtn.classList.add('active');
+            if(document.getElementById(`ep-btn-${index}`)) document.getElementById(`ep-btn-${index}`).classList.add('active');
 
-            // --- Check for .m3u8 ---
             if (Hls.isSupported() && link.includes('.m3u8')) {
-                // Agar purana HLS chal raha hai to destroy karo
-                if(hls) { hls.destroy(); }
-                
+                if(hls) hls.destroy();
                 hls = new Hls();
                 hls.loadSource(link);
                 hls.attachMedia(video);
-                hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                    video.play();
-                });
-            } 
-            // Safari (iPhone/Mac) native support
-            else if (video.canPlayType('application/vnd.apple.mpegurl') && link.includes('.m3u8')) {
-                video.src = link;
-                video.play();
-            } 
-            // Normal MP4 / WebM
-            else {
-                if(hls) { hls.destroy(); } // Cleanup
+                hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
+            } else {
                 video.src = link;
                 video.play();
             }
