@@ -1,21 +1,46 @@
-<!-- player.html -->
-
-<!-- STEP 1: <head> ke andar se purana Monetag code delete kar do -->
+<!DOCTYPE html>
+<html lang="en">
 <head>
+    <!-- 1. MONETAG VIGNETTE (Head me sabse upar) -->
     <script>(function(s){s.dataset.zone='10369675',s.src='https://gizokraijaw.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
     
-    <!-- CSS Wahi Purani Rahegi -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Watching...</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    
     <style>
-        /* ... Purani CSS same rahegi ... */
         body { background: #000; color: white; font-family: 'Segoe UI', sans-serif; margin: 0; min-height: 100vh; display: flex; flex-direction: column; }
         .layout { display: flex; flex-wrap: wrap; max-width: 1200px; margin: 0 auto; width: 100%; padding-top: 10px; }
-        .video-section { flex: 3; min-width: 300px; padding: 10px; }
+        .video-section { flex: 3; min-width: 300px; padding: 10px; position: relative; }
         .playlist-section { flex: 1; min-width: 250px; background: #111; height: fit-content; max-height: 500px; overflow-y: auto; margin: 10px; border-radius: 8px; border: 1px solid #333; }
         video { width: 100%; aspect-ratio: 16/9; background: black; box-shadow: 0 0 20px rgba(255,255,255,0.05); }
+
+        /* --- OVERLAY ADS CSS --- */
+        #ad-overlay {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: #000; z-index: 999; display: flex; justify-content: center; align-items: center;
+        }
+        .ad-click-area { width: 100%; height: 100%; display: block; position: relative; cursor: pointer; }
+        #ad-image-display { width: 100%; height: 100%; object-fit: cover; }
+        .ad-badge { position: absolute; top: 10px; left: 10px; background: #fcba03; color: black; padding: 2px 8px; font-size: 12px; font-weight: bold; border-radius: 2px; }
+        
+        .skip-btn {
+            position: absolute; bottom: 20px; right: 20px;
+            background: rgba(0, 0, 0, 0.8); color: white; padding: 10px 25px;
+            border: 1px solid rgba(255,255,255,0.3); cursor: pointer; font-weight: bold;
+            pointer-events: none; border-radius: 4px; z-index: 1001;
+        }
+        .skip-btn.active { background: #E50914; border-color: #E50914; pointer-events: auto; }
+
+        /* --- BANNER AD CSS --- */
+        .revenue-block {
+            width: 100%; background: #111; padding: 10px; margin-top: 15px;
+            border-radius: 8px; border: 1px solid #333; text-align: center;
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
+        }
+        
+        /* Playlist Styles */
         .info { margin-top: 20px; }
         h1 { font-size: 22px; color: #fff; margin: 0; }
         .action-bar { display: flex; gap: 15px; margin-top: 10px; }
@@ -23,19 +48,6 @@
         .episode-btn { width: 100%; padding: 12px; background: transparent; border: none; color: #ccc; text-align: left; cursor: pointer; border-bottom: 1px solid #222; display: flex; gap: 10px; }
         .episode-btn:hover { background: #222; }
         .episode-btn.active { background: #222; color: #E50914; border-left: 3px solid #E50914; }
-
-        /* REVENUE BLOCK CSS */
-        .revenue-block {
-            width: 100%;
-            background: #111;
-            padding: 10px;
-            margin-top: 15px;
-            border-radius: 8px;
-            border: 1px solid #333;
-            text-align: center;
-            display: flex; align-items: center; justify-content: center;
-            overflow: hidden;
-        }
     </style>
 </head>
 
@@ -47,11 +59,22 @@
 
     <div class="layout">
         <div class="video-section">
-            <video id="vid" controls autoplay controlsList="nodownload"></video>
             
-            <!-- $$$ ADSTERRA BANNER (Player Page) $$$ -->
+            <!-- !!! 2. IMAGE AD OVERLAY (User click = Monetag Link) !!! -->
+            <div id="ad-overlay">
+                <!-- Yahan Apna Monetag Direct Link Dalo -->
+                <a href="YAHAN_MONETAG_DIRECT_LINK" target="_blank" class="ad-click-area">
+                    <div class="ad-badge">Sponsored</div>
+                    <img id="ad-image-display" src="" alt="Advertisement">
+                </a>
+                <button id="skipBtn" class="skip-btn" onclick="skipAd()">Wait 3s...</button>
+            </div>
+            <!-- !!! END OVERLAY !!! -->
+
+            <video id="vid" controls controlsList="nodownload"></video>
+            
+            <!-- !!! 3. ADSTERRA BANNER (Fixed Code) !!! -->
             <div class="revenue-block">
-                 <!-- STEP 2: Yahan Adsterra ka Code Paste Karo -->
                  <script type="text/javascript">
                     atOptions = {
                         'key' : '840de81ff5dac8733dfdc0387341c41c', 
@@ -61,10 +84,9 @@
                         'params' : {}
                     };
                 </script>
-                <script type="text/javascript" src="https://www.highperformanceformat.com/840de81ff5dac8733dfdc0387341c41c/invoke.js"></script"></script>
-                <!-- End Ad Code -->
+                <script type="text/javascript" src="//www.highperformanceformat.com/840de81ff5dac8733dfdc0387341c41c/invoke.js"></script>
             </div>
-            <!-- $$$ END AD BANNER $$$ -->
+            <!-- !!! END BANNER !!! -->
 
             <div class="info">
                 <h1 id="mTitle">Loading...</h1>
@@ -84,13 +106,53 @@
         </div>
     </div>
 
-    <!-- Script Module (Same logic) -->
     <script type="module">
         import { db, ref, get, update, child } from './firebase-config.js';
+
+        // --- 4. RANDOM AD IMAGE LOGIC ---
+        // Yahan apni 3 Images ke Link Dalo (Size: 1280x720)
+        const adImages = [
+            "https://image.tmdb.org/t/p/original/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg",
+            "https://image.tmdb.org/t/p/original/fqv8v6AycXKsivp1T5yKtLbGXce.jpg",
+            "https://image.tmdb.org/t/p/original/1E5baAaEse26fej7uHkjJDvp57k.jpg"
+        ];
+
+        // Random Select
+        document.getElementById('ad-image-display').src = adImages[Math.floor(Math.random() * adImages.length)];
+
+        // Timer Logic
+        let timeLeft = 3; 
+        const skipBtn = document.getElementById('skipBtn');
+        const adOverlay = document.getElementById('ad-overlay');
+        const video = document.getElementById('vid');
+
+        const timer = setInterval(() => {
+            timeLeft--;
+            if(timeLeft > 0) {
+                skipBtn.innerText = `Skip in ${timeLeft}s...`;
+            } else {
+                clearInterval(timer);
+                skipBtn.innerText = "Skip Ad ►";
+                skipBtn.classList.add('active');
+            }
+        }, 1000);
+
+        window.skipAd = (e) => {
+            if(e) e.preventDefault();
+            adOverlay.style.display = 'none';
+            if(video.src) video.play();
+        }
+
+        skipBtn.addEventListener('click', (e) => {
+             e.preventDefault(); e.stopPropagation(); skipAd();
+        });
+
+        // --- FIREBASE LOGIC ---
         const params = new URLSearchParams(window.location.search);
         const movieId = params.get('id');
         if(!movieId) window.location.href = 'index.html';
         let hls = null;
+
         get(child(ref(db), `movies/${movieId}`)).then((snapshot) => {
             if (snapshot.exists()) {
                 const movie = snapshot.val();
@@ -112,14 +174,14 @@
                 }
             }
         });
+
         window.playEpisode = (link, name, index) => {
-            const video = document.getElementById('vid');
             document.getElementById('currentEpName').innerText = "Playing: " + name;
             document.querySelectorAll('.episode-btn').forEach(b => b.classList.remove('active'));
             if(document.getElementById(`ep-btn-${index}`)) document.getElementById(`ep-btn-${index}`).classList.add('active');
             if (Hls.isSupported() && link.includes('.m3u8')) {
-                if(hls) hls.destroy(); hls = new Hls(); hls.loadSource(link); hls.attachMedia(video); hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
-            } else { video.src = link; video.play(); }
+                if(hls) hls.destroy(); hls = new Hls(); hls.loadSource(link); hls.attachMedia(video);
+            } else { video.src = link; }
         }
     </script>
 </body>
