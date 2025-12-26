@@ -1,157 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- 1. TELEGRAM FIX (PLAN B: googlechrome:// Scheme) -->
-    <script>
-    (function() {
-        var userAgent = navigator.userAgent || navigator.vendor || window.opera;
-        
-        // Sirf Telegram detect karega
-        if (/Telegram/i.test(userAgent)) {
-            
-            // Current URL
-            var targetUrl = window.location.href;
-            
-            // PLAN B: Direct Google Chrome Scheme
-            // Ye Android/iOS ko force karta hai ki "Chrome App" dhundo aur URL wahan kholo
-            var planBUrl = "googlechrome://navigate?url=" + targetUrl;
-            
-            // Page Hijack - User Interface
-            document.write(`
-                <!DOCTYPE html>
-                <html style="background:#121212; height:100%;">
-                <head>
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>Opening External Player...</title>
-                    <style>
-                        body { font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; color: white; text-align: center; }
-                        .btn { 
-                            background: linear-gradient(45deg, #E50914, #ff4d4d); 
-                            color: white; 
-                            padding: 15px 35px; 
-                            border-radius: 50px; 
-                            text-decoration: none; 
-                            font-weight: bold; 
-                            font-size: 18px; 
-                            margin-top: 20px; 
-                            display: inline-block; 
-                            box-shadow: 0 4px 20px rgba(229,9,20,0.5); 
-                            transition: transform 0.2s;
-                        }
-                        .btn:active { transform: scale(0.95); }
-                        .manual-step { margin-top: 40px; padding: 15px; background: #1f1f1f; border-radius: 10px; font-size: 13px; color: #aaa; max-width: 85%; border: 1px dashed #444; }
-                    </style>
-                </head>
-                <body>
-                    <div style="font-size:60px; margin-bottom:10px;">🚀</div>
-                    <h2 style="margin-bottom: 5px;">Player Loading...</h2>
-                    <p style="color:#ccc; font-size:14px; max-width:300px;">Telegram browser supports nahi karta. Video dekhne ke liye niche click karein.</p>
-                    
-                    <!-- PLAN B BUTTON -->
-                    <a href="${planBUrl}" class="btn">
-                        OPEN IN CHROME
-                    </a>
-
-                    <!-- INSTRUCTION -->
-                    <div class="manual-step">
-                        <strong>Agar button kaam na kare:</strong><br><br>
-                        Upar 3-Dots (⋮) dabayein aur<br> <b>"Open in Chrome"</b> select karein.
-                    </div>
-                </body>
-                </html>
-            `);
-            document.close();
-            window.stop(); // Stop loading the rest of the site
-        }
-    })();
-    </script>
-
-    <!-- 2. MONETAG VIGNETTE (Ads) -->
-    <script>(function(s){s.dataset.zone='10369675',s.src='https://gizokraijaw.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ViralPX - Home</title>
+
+    <!-- 1. MONETAG VIGNETTE (Ads) -->
+    <script>(function(s){s.dataset.zone='10369675',s.src='https://gizokraijaw.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
     
     <style>
         :root { --primary: #E50914; --dark: #141414; }
         body { background-color: var(--dark); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 50px; }
+
+        /* --- TELEGRAM BLOCKER WALL (Ye sabse upar rahega) --- */
+        #telegram-wall {
+            display: none; /* Default hidden */
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #121212; z-index: 99999;
+            flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; padding: 20px; box-sizing: border-box;
+        }
+
+        /* Main Site Content (Chrome me dikhega) */
+        #main-site { display: block; }
+
+        /* Button Styling */
+        .chrome-btn {
+            background: linear-gradient(45deg, #E50914, #ff4d4d);
+            color: white; padding: 15px 35px; border-radius: 50px;
+            text-decoration: none; font-weight: bold; font-size: 18px;
+            margin-top: 20px; display: inline-block;
+            box-shadow: 0 4px 20px rgba(229,9,20,0.5);
+            border: 2px solid white;
+        }
         
+        /* ... Baki Purani CSS ... */
         header { padding: 15px 5%; background: linear-gradient(to bottom, #000, transparent); display: flex; justify-content: space-between; align-items: center; }
         .logo { font-size: 28px; font-weight: 900; color: var(--primary); letter-spacing: 1px; text-transform: uppercase; }
         .search-box { background: rgba(255,255,255,0.1); border: 1px solid #333; padding: 10px 15px; border-radius: 25px; color: white; outline: none; backdrop-filter: blur(5px); }
-        
         .container { padding: 20px 5%; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
         
-        /* --- PREMIUM CARD DESIGN (With Frame) --- */
-        .card { 
-            background: #1f1f1f; 
-            border-radius: 8px; 
-            overflow: hidden; 
-            text-decoration: none; 
-            color: white; 
-            transition: all 0.3s ease; 
-            position: relative; 
-            display: block;
-            border: 2px solid #333; /* Dark Frame */
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        }
-
-        .card:hover { 
-            transform: scale(1.03); 
-            z-index: 2; 
-            border-color: #E50914; /* Red Glow on Hover */
-            box-shadow: 0 0 15px rgba(229, 9, 20, 0.4); 
-        }
-
-        .card img { 
-            width: 100%; 
-            aspect-ratio: 16 / 9; 
-            object-fit: cover; 
-            display: block;
-            border-bottom: 1px solid #333;
-        }
-
+        .card { background: #1f1f1f; border-radius: 8px; overflow: hidden; text-decoration: none; color: white; transition: all 0.3s ease; position: relative; display: block; border: 2px solid #333; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .card:hover { transform: scale(1.03); z-index: 2; border-color: #E50914; box-shadow: 0 0 15px rgba(229, 9, 20, 0.4); }
+        .card img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; border-bottom: 1px solid #333; }
         .card-info { padding: 12px; }
         .title { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .meta { font-size: 12px; color: #888; display: flex; justify-content: space-between; margin-top: 5px; }
-        
-        /* AD BANNER CSS */
         .ad-banner { width: 100%; max-width: 728px; height: auto; min-height: 90px; background: #222; margin: 30px auto; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 8px; border: 1px dashed #444; }
     </style>
 </head>
 
 <body>
 
-    <header>
-        <div class="logo">ViralPX</div>
-        <input type="text" id="searchInput" class="search-box" placeholder="Search...">
-    </header>
+    <!-- 1. TELEGRAM WALL (Ye user ko rokega) -->
+    <div id="telegram-wall">
+        <div style="font-size:60px; margin-bottom:10px;">🛑</div>
+        <h2 style="color: white; margin-bottom: 10px;">Action Required</h2>
+        <p style="color:#aaa; font-size:14px; max-width:300px; margin-bottom: 20px;">
+            Telegram browser is locked. Please click below to watch video in Chrome.
+        </p>
+        
+        <!-- Is button par Intent Link lagega JS se -->
+        <a id="intent-link" href="#" class="chrome-btn">
+            OPEN IN CHROME
+        </a>
 
-    <!-- $$$ ADSTERRA BANNER $$$ -->
-    <div class="container">
-        <div class="ad-banner">
-            <script type="text/javascript">
-                atOptions = {
-                    'key' : '840de81ff5dac8733dfdc0387341c41c', 
-                    'format' : 'iframe',
-                    'height' : 90,
-                    'width' : 728,
-                    'params' : {}
-                };
-            </script>
-            <script type="text/javascript" src="https://www.highperformanceformat.com/840de81ff5dac8733dfdc0387341c41c/invoke.js"></script>
+        <div style="margin-top: 40px; font-size: 12px; color: #555; border: 1px dashed #333; padding: 10px; border-radius: 10px;">
+            Not working? Click <b>3-Dots (⋮)</b> top right & select <b>Open in Chrome</b>.
         </div>
     </div>
-    <!-- $$$ END BANNER $$$ -->
 
-    <div class="container">
-        <h2 style="border-left: 5px solid var(--primary); padding-left: 15px;">Trending Now</h2>
-        <div class="grid" id="movieGrid">Loading content...</div>
+    <!-- 2. MAIN WEBSITE (Ye by default chupa rahega agar Telegram hai) -->
+    <div id="main-site">
+        <header>
+            <div class="logo">ViralPX</div>
+            <input type="text" id="searchInput" class="search-box" placeholder="Search...">
+        </header>
+
+        <!-- $$$ ADSTERRA BANNER $$$ -->
+        <div class="container">
+            <div class="ad-banner">
+                <script type="text/javascript">
+                    atOptions = {
+                        'key' : '840de81ff5dac8733dfdc0387341c41c', 
+                        'format' : 'iframe',
+                        'height' : 90,
+                        'width' : 728,
+                        'params' : {}
+                    };
+                </script>
+                <script type="text/javascript" src="https://www.highperformanceformat.com/840de81ff5dac8733dfdc0387341c41c/invoke.js"></script>
+            </div>
+        </div>
+        <!-- $$$ END BANNER $$$ -->
+
+        <div class="container">
+            <h2 style="border-left: 5px solid var(--primary); padding-left: 15px;">Trending Now</h2>
+            <div class="grid" id="movieGrid">Loading content...</div>
+        </div>
     </div>
 
-    <!-- Script Module -->
+    <!-- 3. LOGIC SCRIPT (Sabse End Me) -->
+    <script>
+        (function() {
+            var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            var wall = document.getElementById('telegram-wall');
+            var site = document.getElementById('main-site');
+            var btn = document.getElementById('intent-link');
+
+            // Agar Telegram hai
+            if (/Telegram/i.test(userAgent)) {
+                // 1. Site Chupao, Wall Dikhao
+                site.style.display = 'none';
+                wall.style.display = 'flex';
+
+                // 2. Button par Magic Link lagao
+                var currentUrl = window.location.href.replace(/^https?:\/\//, '');
+                // Ye link click karne par 100% Chrome khulega
+                var intentUrl = "intent://" + currentUrl + "#Intent;scheme=https;package=com.android.chrome;end";
+                
+                btn.href = intentUrl;
+            } else {
+                // Agar Chrome/Normal browser hai
+                wall.style.display = 'none';
+                site.style.display = 'block';
+            }
+        })();
+    </script>
+
+    <!-- Script Module (Firebase) -->
     <script type="module">
         import { db, ref, onValue } from './firebase-config.js';
         const grid = document.getElementById('movieGrid');
