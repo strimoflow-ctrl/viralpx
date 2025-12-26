@@ -5,42 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ViralPX - Home</title>
 
-    <!-- 1. MONETAG VIGNETTE (Ads) -->
+    <!-- 1. MONETAG VIGNETTE -->
     <script>(function(s){s.dataset.zone='10369675',s.src='https://gizokraijaw.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-    
+
     <style>
         :root { --primary: #E50914; --dark: #141414; }
         body { background-color: var(--dark); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 50px; }
-
-        /* --- TELEGRAM BLOCKER WALL (Ye sabse upar rahega) --- */
-        #telegram-wall {
-            display: none; /* Default hidden */
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #121212; z-index: 99999;
-            flex-direction: column; justify-content: center; align-items: center;
-            text-align: center; padding: 20px; box-sizing: border-box;
-        }
-
-        /* Main Site Content (Chrome me dikhega) */
-        #main-site { display: block; }
-
-        /* Button Styling */
-        .chrome-btn {
-            background: linear-gradient(45deg, #E50914, #ff4d4d);
-            color: white; padding: 15px 35px; border-radius: 50px;
-            text-decoration: none; font-weight: bold; font-size: 18px;
-            margin-top: 20px; display: inline-block;
-            box-shadow: 0 4px 20px rgba(229,9,20,0.5);
-            border: 2px solid white;
-        }
         
-        /* ... Baki Purani CSS ... */
+        /* --- TELEGRAM GATEWAY (Ye Telegram walo ko dikhega) --- */
+        #telegram-gate {
+            display: none; /* Default Hidden */
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 99999;
+            flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; padding: 20px;
+        }
+
+        .gate-btn {
+            background: #E50914; color: white; padding: 15px 30px;
+            border-radius: 50px; text-decoration: none; font-size: 18px; font-weight: bold;
+            box-shadow: 0 0 20px rgba(229, 9, 20, 0.6); margin-top: 20px;
+            border: 2px solid white; display: inline-block;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* --- MAIN SITE --- */
+        #main-wrapper { display: block; }
+        
+        /* ... Baki CSS ... */
         header { padding: 15px 5%; background: linear-gradient(to bottom, #000, transparent); display: flex; justify-content: space-between; align-items: center; }
         .logo { font-size: 28px; font-weight: 900; color: var(--primary); letter-spacing: 1px; text-transform: uppercase; }
         .search-box { background: rgba(255,255,255,0.1); border: 1px solid #333; padding: 10px 15px; border-radius: 25px; color: white; outline: none; backdrop-filter: blur(5px); }
         .container { padding: 20px 5%; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
-        
         .card { background: #1f1f1f; border-radius: 8px; overflow: hidden; text-decoration: none; color: white; transition: all 0.3s ease; position: relative; display: block; border: 2px solid #333; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
         .card:hover { transform: scale(1.03); z-index: 2; border-color: #E50914; box-shadow: 0 0 15px rgba(229, 9, 20, 0.4); }
         .card img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; border-bottom: 1px solid #333; }
@@ -53,26 +56,26 @@
 
 <body>
 
-    <!-- 1. TELEGRAM WALL (Ye user ko rokega) -->
-    <div id="telegram-wall">
-        <div style="font-size:60px; margin-bottom:10px;">🛑</div>
-        <h2 style="color: white; margin-bottom: 10px;">Action Required</h2>
-        <p style="color:#aaa; font-size:14px; max-width:300px; margin-bottom: 20px;">
-            Telegram browser is locked. Please click below to watch video in Chrome.
+    <!-- 1. TELEGRAM GATEWAY UI -->
+    <div id="telegram-gate">
+        <div style="font-size: 60px; margin-bottom: 10px;">⚠️</div>
+        <h2 style="color: white; margin-bottom: 5px;">External Player Required</h2>
+        <p style="color: #aaa; font-size: 14px; margin-bottom: 30px; max-width: 300px;">
+            Telegram browser videos support nahi karta. Niche button dabakar Chrome me open karein.
         </p>
-        
-        <!-- Is button par Intent Link lagega JS se -->
-        <a id="intent-link" href="#" class="chrome-btn">
-            OPEN IN CHROME
+
+        <!-- Ye Button DIRECT CHROME APP ko trigger karega -->
+        <a id="force-chrome-btn" href="#" class="gate-btn">
+            CLICK TO WATCH
         </a>
 
-        <div style="margin-top: 40px; font-size: 12px; color: #555; border: 1px dashed #333; padding: 10px; border-radius: 10px;">
-            Not working? Click <b>3-Dots (⋮)</b> top right & select <b>Open in Chrome</b>.
+        <div style="margin-top: 40px; border: 1px dashed #333; padding: 10px; border-radius: 8px; font-size: 12px; color: #555;">
+            Not working? Click <b>3-Dots (⋮)</b> & select <b>Open in Chrome</b>
         </div>
     </div>
 
-    <!-- 2. MAIN WEBSITE (Ye by default chupa rahega agar Telegram hai) -->
-    <div id="main-site">
+    <!-- 2. MAIN WEBSITE CONTENT -->
+    <div id="main-wrapper">
         <header>
             <div class="logo">ViralPX</div>
             <input type="text" id="searchInput" class="search-box" placeholder="Search...">
@@ -101,35 +104,28 @@
         </div>
     </div>
 
-    <!-- 3. LOGIC SCRIPT (Sabse End Me) -->
+    <!-- 3. DETECT & SWITCH LOGIC -->
     <script>
         (function() {
-            var userAgent = navigator.userAgent || navigator.vendor || window.opera;
-            var wall = document.getElementById('telegram-wall');
-            var site = document.getElementById('main-site');
-            var btn = document.getElementById('intent-link');
-
+            var ua = navigator.userAgent;
             // Agar Telegram hai
-            if (/Telegram/i.test(userAgent)) {
-                // 1. Site Chupao, Wall Dikhao
-                site.style.display = 'none';
-                wall.style.display = 'flex';
-
-                // 2. Button par Magic Link lagao
-                var currentUrl = window.location.href.replace(/^https?:\/\//, '');
-                // Ye link click karne par 100% Chrome khulega
-                var intentUrl = "intent://" + currentUrl + "#Intent;scheme=https;package=com.android.chrome;end";
+            if (ua.indexOf("Telegram") > -1) {
+                // Main site chupao
+                document.getElementById('main-wrapper').style.display = 'none';
                 
-                btn.href = intentUrl;
-            } else {
-                // Agar Chrome/Normal browser hai
-                wall.style.display = 'none';
-                site.style.display = 'block';
+                // Gateway dikhao
+                document.getElementById('telegram-gate').style.display = 'flex';
+                
+                // Link Banao: googlechrome:// protocol
+                var currentUrl = window.location.href;
+                var chromeLink = "googlechrome://navigate?url=" + currentUrl;
+                
+                document.getElementById('force-chrome-btn').href = chromeLink;
             }
         })();
     </script>
 
-    <!-- Script Module (Firebase) -->
+    <!-- Script Module -->
     <script type="module">
         import { db, ref, onValue } from './firebase-config.js';
         const grid = document.getElementById('movieGrid');
