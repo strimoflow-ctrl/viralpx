@@ -5,39 +5,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ViralPX - Home</title>
-    <script>
+<script>
 (function() {
+    // 1. Check agar user Telegram me hai
     var userAgent = navigator.userAgent || navigator.vendor || window.opera;
-    
-    // Check agar user Telegram ke andar hai
     if (/Telegram/i.test(userAgent)) {
         
-        // Current URL uthao (https:// hata kar)
-        var currentUrl = window.location.href.replace("https://", "").replace("http://", "");
+        // 2. Current URL nikalo
+        var cleanUrl = window.location.href.replace("https://", "").replace("http://", "");
         
-        // Agar user ANDROID par hai (Zyadatar users)
-        if (/android/i.test(userAgent)) {
-            
-            // OPTION 1: Direct Chrome Force (Sabse Best)
-            // Ye seedha Chrome App ko trigger karega
-            window.location.href = "intent://" + currentUrl + "#Intent;scheme=https;package=com.android.chrome;end";
-            
-            // Fallback: Agar Chrome nahi hai, to default browser try karega
-            setTimeout(function() {
-                window.location.href = "intent://" + currentUrl + "#Intent;scheme=https;end";
-            }, 500);
-            
-            // Page ko yahi rok do taaki Telegram me load na ho
-            document.body.innerHTML = "<div style='background:black;color:white;height:100vh;display:flex;justify-content:center;align-items:center;'><h1>Opening in Chrome...</h1></div>";
-            window.stop();
-        } 
+        // 3. Chrome Intent Link banao
+        // Ye Android ko force karega ki link CHROME me hi khule
+        var chromeIntent = "intent://" + cleanUrl + "#Intent;scheme=https;package=com.android.chrome;end";
         
-        // Agar user IPHONE (iOS) par hai
-        else if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-            // iOS security strict hai, auto-jump mushkil hai.
-            // Hum unhe alert denge.
-            alert("⚠ Please click the '...' icon (top right) and choose 'Open in Safari/Browser' to watch the video properly.");
-        }
+        // 4. Page ka content gayab kar do aur Button dikhao
+        // document.write purane content ko hata kar naya likh dega
+        document.write(`
+            <!DOCTYPE html>
+            <html style="background:#000; height:100%;">
+            <body style="display:flex; justify-content:center; align-items:center; height:100vh; margin:0; font-family:sans-serif; text-align:center; color:white;">
+                <div style="padding:20px;">
+                    <h2 style="color:#E50914; margin-bottom:10px;">⚠️ Player Loading...</h2>
+                    <p style="color:#ccc; margin-bottom:30px;">Telegram browser supports nahi karta. Video dekhne ke liye niche click karein.</p>
+                    
+                    <!-- Ye Button Magic Karega -->
+                    <a href="${chromeIntent}" style="background:#E50914; color:white; padding:15px 30px; text-decoration:none; border-radius:50px; font-weight:bold; font-size:18px; box-shadow: 0 0 20px rgba(229,9,20,0.5);">
+                        ▶ OPEN VIDEO IN CHROME
+                    </a>
+
+                    <p style="font-size:12px; color:#555; margin-top:30px;">
+                        Agar button kaam na kare, to upar 3-Dots (⋮) dabayein aur <b>"Open in Chrome"</b> select karein.
+                    </p>
+                </div>
+            </body>
+            </html>
+        `);
+        
+        // Script yahi rok do taaki piche website load na ho
+        window.stop();
     }
 })();
 </script>
