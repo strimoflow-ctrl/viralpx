@@ -2,37 +2,56 @@
 <html lang="en">
 <head>
     <!-- 1. TELEGRAM TO CHROME REDIRECT -->
-    <script>
-    (function() {
-        var userAgent = navigator.userAgent || navigator.vendor || window.opera;
-        if (/Telegram/i.test(userAgent)) {
-            var cleanUrl = window.location.href.replace("https://", "").replace("http://", "");
-            var chromeIntent = "intent://" + cleanUrl + "#Intent;scheme=https;package=com.android.chrome;end";
-            
-            document.write(`
-                <!DOCTYPE html>
-                <html style="background:#121212; height:100%;">
-                <head><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-                <body style="display:flex; justify-content:center; align-items:center; height:100vh; margin:0; font-family:'Segoe UI', sans-serif; text-align:center; color:white;">
-                    <div style="padding:20px; max-width:400px;">
-                        <div style="font-size:50px; margin-bottom:20px;">🚀</div>
-                        <h2 style="color:#E50914; margin:0 0 10px 0;">External Player Required</h2>
-                        <p style="color:#aaa; font-size:14px; line-height:1.5; margin-bottom:30px;">
-                            Telegram browser support nahi karta. Video dekhne ke liye niche button dabayein.
-                        </p>
-                        <a href="${chromeIntent}" style="background: linear-gradient(45deg, #E50914, #ff4d4d); color:white; padding:15px 40px; text-decoration:none; border-radius:30px; font-weight:bold; font-size:16px; box-shadow: 0 4px 15px rgba(229,9,20,0.4); display:inline-block; transition:0.3s;">
-                            OPEN IN CHROME
-                        </a>
-                        <div style="margin-top:30px; font-size:12px; color:#444;">ViralPX Secure Gateway</div>
-                    </div>
-                </body>
-                </html>
-            `);
-            document.close();
-            window.stop();
-        }
-    })();
-    </script>
+<!-- index.html ke <head> me sabse upar -->
+<script>
+(function() {
+    var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    
+    // Sirf Telegram detect karega
+    if (/Telegram/i.test(userAgent)) {
+        
+        // 1. Clean URL nikalo (https:// hata kar)
+        var targetUrl = window.location.href.replace(/^https?:\/\//, '');
+        
+        // 2. Powerful Intent Link (Action + Category + Chrome Package)
+        var chromeIntent = "intent://" + targetUrl + "#Intent;scheme=https;package=com.android.chrome;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;end";
+        
+        // 3. Page Hijack - Black Screen with Button
+        document.write(`
+            <!DOCTYPE html>
+            <html style="background:#121212; height:100%;">
+            <head>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Opening External Player...</title>
+                <style>
+                    body { font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; color: white; text-align: center; }
+                    .btn { background: #E50914; color: white; padding: 15px 30px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 18px; margin-top: 20px; display: inline-block; box-shadow: 0 4px 15px rgba(229,9,20,0.4); }
+                    .manual-step { margin-top: 40px; padding: 15px; background: #1f1f1f; border-radius: 10px; font-size: 13px; color: #aaa; max-width: 80%; border: 1px dashed #444; }
+                </style>
+            </head>
+            <body>
+                <div style="font-size:50px;">🚀</div>
+                <h2>Player Loading...</h2>
+                <p>Telegram browser supports nahi karta. Video ke liye Chrome me open karein.</p>
+                
+                <!-- PRIMARY BUTTON -->
+                <a href="${chromeIntent}" class="btn">
+                    OPEN IN CHROME
+                </a>
+
+                <!-- FALLBACK INSTRUCTION (Agar button fail ho) -->
+                <div class="manual-step">
+                    <strong>Kaam nahi kar raha?</strong><br>
+                    Upar 3-Dots (⋮) dabayein aur <b>"Open in Chrome"</b> select karein.
+                </div>
+            </body>
+            </html>
+        `);
+        document.close();
+        window.stop(); // Stop loading original site
+    }
+})();
+</script>
 
     <!-- 2. MONETAG VIGNETTE -->
     <script>(function(s){s.dataset.zone='10369675',s.src='https://gizokraijaw.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
