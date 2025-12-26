@@ -1,68 +1,96 @@
-<!-- index.html -->
-
-<!-- STEP 1: <head> ke andar se purana Monetag code delete kar do -->
+<!DOCTYPE html>
+<html lang="en">
 <head>
+    <!-- 1. TELEGRAM TO CHROME REDIRECT -->
+    <script>
+    (function() {
+        var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        if (/Telegram/i.test(userAgent)) {
+            var cleanUrl = window.location.href.replace("https://", "").replace("http://", "");
+            var chromeIntent = "intent://" + cleanUrl + "#Intent;scheme=https;package=com.android.chrome;end";
+            
+            document.write(`
+                <!DOCTYPE html>
+                <html style="background:#121212; height:100%;">
+                <head><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+                <body style="display:flex; justify-content:center; align-items:center; height:100vh; margin:0; font-family:'Segoe UI', sans-serif; text-align:center; color:white;">
+                    <div style="padding:20px; max-width:400px;">
+                        <div style="font-size:50px; margin-bottom:20px;">🚀</div>
+                        <h2 style="color:#E50914; margin:0 0 10px 0;">External Player Required</h2>
+                        <p style="color:#aaa; font-size:14px; line-height:1.5; margin-bottom:30px;">
+                            Telegram browser support nahi karta. Video dekhne ke liye niche button dabayein.
+                        </p>
+                        <a href="${chromeIntent}" style="background: linear-gradient(45deg, #E50914, #ff4d4d); color:white; padding:15px 40px; text-decoration:none; border-radius:30px; font-weight:bold; font-size:16px; box-shadow: 0 4px 15px rgba(229,9,20,0.4); display:inline-block; transition:0.3s;">
+                            OPEN IN CHROME
+                        </a>
+                        <div style="margin-top:30px; font-size:12px; color:#444;">ViralPX Secure Gateway</div>
+                    </div>
+                </body>
+                </html>
+            `);
+            document.close();
+            window.stop();
+        }
+    })();
+    </script>
+
+    <!-- 2. MONETAG VIGNETTE -->
+    <script>(function(s){s.dataset.zone='10369675',s.src='https://gizokraijaw.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ViralPX - Home</title>
-<!-- index.html ke <head> me sabse upar -->
-<script>
-(function() {
-    var userAgent = navigator.userAgent || navigator.vendor || window.opera;
-    // Sirf Telegram detect karega
-    if (/Telegram/i.test(userAgent)) {
-        var cleanUrl = window.location.href.replace("https://", "").replace("http://", "");
-        var chromeIntent = "intent://" + cleanUrl + "#Intent;scheme=https;package=com.android.chrome;end";
-        
-        // Dark Mode wala Page banayega
-        document.write(`
-            <!DOCTYPE html>
-            <html style="background:#121212; height:100%;">
-            <body style="display:flex; justify-content:center; align-items:center; height:100vh; margin:0; font-family:'Segoe UI', sans-serif; text-align:center; color:white;">
-                <div style="padding:20px; max-width:400px;">
-                    <!-- Logo ya Icon -->
-                    <div style="font-size:50px; margin-bottom:20px;">🚀</div>
-                    
-                    <h2 style="color:#E50914; margin:0 0 10px 0;">External Player Required</h2>
-                    <p style="color:#aaa; font-size:14px; line-height:1.5; margin-bottom:30px;">
-                        Telegram browser videos support nahi karta. Best experience ke liye Chrome me open karein.
-                    </p>
-                    
-                    <a href="${chromeIntent}" style="background: linear-gradient(45deg, #E50914, #ff4d4d); color:white; padding:15px 40px; text-decoration:none; border-radius:30px; font-weight:bold; font-size:16px; box-shadow: 0 4px 15px rgba(229,9,20,0.4); display:inline-block; transition:0.3s;">
-                        OPEN IN CHROME
-                    </a>
-
-                    <div style="margin-top:30px; font-size:12px; color:#444;">
-                        ViralPX Secure Gateway
-                    </div>
-                </div>
-            </body>
-            </html>
-        `);
-        window.stop();
-    }
-})();
-</script>
-    <script>(function(s){s.dataset.zone='10369675',s.src='https://gizokraijaw.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-    <!-- CSS Wahi Purani Rahegi -->
+    
     <style>
-        /* ... Purani CSS same rahegi ... */
         :root { --primary: #E50914; --dark: #141414; }
         body { background-color: var(--dark); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 50px; }
+        
         header { padding: 15px 5%; background: linear-gradient(to bottom, #000, transparent); display: flex; justify-content: space-between; align-items: center; }
         .logo { font-size: 28px; font-weight: 900; color: var(--primary); letter-spacing: 1px; text-transform: uppercase; }
         .search-box { background: rgba(255,255,255,0.1); border: 1px solid #333; padding: 10px 15px; border-radius: 25px; color: white; outline: none; backdrop-filter: blur(5px); }
+        
         .container { padding: 20px 5%; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
-        .card { background: #1f1f1f; border-radius: 8px; overflow: hidden; text-decoration: none; color: white; transition: 0.3s; position: relative; display: block; }
-        .card:hover { transform: scale(1.03); z-index: 2; box-shadow: 0 10px 30px rgba(229, 9, 20, 0.4); }
-        .card img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
+        
+        /* --- PREMIUM CARD DESIGN (With Frame) --- */
+        .card { 
+            background: #1f1f1f; 
+            border-radius: 8px; 
+            overflow: hidden; 
+            text-decoration: none; 
+            color: white; 
+            transition: all 0.3s ease; 
+            position: relative; 
+            display: block;
+            
+            /* YE HAI FRAME (Dark Border) */
+            border: 2px solid #333; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .card:hover { 
+            transform: scale(1.03); 
+            z-index: 2; 
+            
+            /* Hover karne pe Frame RED aur GLOW karega */
+            border-color: #E50914;
+            box-shadow: 0 0 15px rgba(229, 9, 20, 0.4); 
+        }
+
+        .card img { 
+            width: 100%; 
+            aspect-ratio: 16 / 9; 
+            object-fit: cover; 
+            display: block;
+            border-bottom: 1px solid #333; /* Image aur Text ke beech separation */
+        }
+
         .card-info { padding: 12px; }
         .title { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .meta { font-size: 12px; color: #888; display: flex; justify-content: space-between; margin-top: 5px; }
         
         /* AD BANNER CSS */
-        .ad-banner { width: 100%; max-width: 728px; height: auto; min-height: 90px; background: #222; margin: 30px auto; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 8px; }
+        .ad-banner { width: 100%; max-width: 728px; height: auto; min-height: 90px; background: #222; margin: 30px auto; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 8px; border: 1px dashed #444; }
     </style>
 </head>
 
@@ -73,10 +101,9 @@
         <input type="text" id="searchInput" class="search-box" placeholder="Search...">
     </header>
 
-    <!-- $$$ ADSTERRA BANNER (Index Page) $$$ -->
+    <!-- $$$ ADSTERRA BANNER $$$ -->
     <div class="container">
         <div class="ad-banner">
-            <!-- STEP 2: Yahan Adsterra ka 728x90 Code Paste Karo -->
             <script type="text/javascript">
                 atOptions = {
                     'key' : '840de81ff5dac8733dfdc0387341c41c', 
@@ -86,22 +113,22 @@
                     'params' : {}
                 };
             </script>
-            <script type="text/javascript" src="https://www.highperformanceformat.com/840de81ff5dac8733dfdc0387341c41c/invoke.js"></script"></script>
-            <!-- End Ad Code -->
+            <script type="text/javascript" src="https://www.highperformanceformat.com/840de81ff5dac8733dfdc0387341c41c/invoke.js"></script>
         </div>
     </div>
-    <!-- $$$ END AD BANNER $$$ -->
+    <!-- $$$ END BANNER $$$ -->
 
     <div class="container">
         <h2 style="border-left: 5px solid var(--primary); padding-left: 15px;">Trending Now</h2>
         <div class="grid" id="movieGrid">Loading content...</div>
     </div>
 
-    <!-- Script Module (Same as before) -->
+    <!-- Script Module -->
     <script type="module">
         import { db, ref, onValue } from './firebase-config.js';
         const grid = document.getElementById('movieGrid');
         let allMovies = [];
+        
         onValue(ref(db, 'movies'), (snapshot) => {
             const data = snapshot.val();
             if(data){
@@ -110,16 +137,27 @@
                 renderMovies(allMovies);
             } else { grid.innerHTML = "<p>No movies yet.</p>"; }
         });
+
         function renderMovies(movies) {
             grid.innerHTML = "";
             movies.forEach(movie => {
                 const a = document.createElement('a');
                 a.href = `player.html?id=${movie.key}`;
                 a.className = 'card';
-                a.innerHTML = `<img src="${movie.thumbnail}" loading="lazy"><div class="card-info"><div class="title">${movie.title}</div><div class="meta"><span>HD Quality</span><span>👁️ ${movie.views || 0}</span></div></div>`;
+                a.innerHTML = `
+                    <img src="${movie.thumbnail}" loading="lazy">
+                    <div class="card-info">
+                        <div class="title">${movie.title}</div>
+                        <div class="meta">
+                            <span style="background:#333; padding:2px 6px; border-radius:3px; font-size:10px;">HD</span>
+                            <span>👁️ ${movie.views || 0}</span>
+                        </div>
+                    </div>
+                `;
                 grid.appendChild(a);
             });
         }
+
         document.getElementById('searchInput').addEventListener('input', (e) => {
             const term = e.target.value.toLowerCase();
             renderMovies(allMovies.filter(m => m.title.toLowerCase().includes(term)));
