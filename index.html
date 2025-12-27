@@ -5,145 +5,88 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ViralPX - Home</title>
 
-    <!-- 1. MONETAG VIGNETTE (Ads) -->
+    <!-- 1. MONETAG VIGNETTE (Ads - Head me sabse upar) -->
     <script>(function(s){s.dataset.zone='10369675',s.src='https://gizokraijaw.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
     <style>
         :root { --primary: #E50914; --dark: #141414; }
         body { background-color: var(--dark); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 50px; }
         
-        /* --- UNIVERSAL LANDING PAGE (Dikhega Sabko) --- */
-        #entry-gate {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 99999;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; padding: 20px; box-sizing: border-box;
-            background-image: radial-gradient(circle at center, #222 0%, #000 100%);
-        }
-
-        .enter-btn {
-            background: linear-gradient(to right, #E50914, #d4000d); 
-            color: white; padding: 18px 50px;
-            border-radius: 50px; text-decoration: none; font-size: 22px; font-weight: 900;
-            box-shadow: 0 0 40px rgba(229, 9, 20, 0.4); margin-top: 30px;
-            border: 2px solid transparent; cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            text-transform: uppercase; letter-spacing: 1px;
-        }
-
-        .enter-btn:hover { transform: scale(1.05); box-shadow: 0 0 60px rgba(229, 9, 20, 0.7); }
-        .enter-btn:active { transform: scale(0.95); }
-
-        /* --- MAIN SITE (Default Hidden) --- */
-        #main-wrapper { display: none; }
-        
-        /* ... Baki CSS ... */
+        /* Header Design */
         header { padding: 15px 5%; background: linear-gradient(to bottom, #000, transparent); display: flex; justify-content: space-between; align-items: center; }
         .logo { font-size: 28px; font-weight: 900; color: var(--primary); letter-spacing: 1px; text-transform: uppercase; }
         .search-box { background: rgba(255,255,255,0.1); border: 1px solid #333; padding: 10px 15px; border-radius: 25px; color: white; outline: none; backdrop-filter: blur(5px); }
+        
+        /* Container & Grid */
         .container { padding: 20px 5%; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
-        .card { background: #1f1f1f; border-radius: 8px; overflow: hidden; text-decoration: none; color: white; transition: all 0.3s ease; position: relative; display: block; border: 2px solid #333; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
-        .card:hover { transform: scale(1.03); z-index: 2; border-color: #E50914; box-shadow: 0 0 15px rgba(229, 9, 20, 0.4); }
-        .card img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; border-bottom: 1px solid #333; }
+        
+        /* --- PREMIUM CARD DESIGN (Frame + Glow) --- */
+        .card { 
+            background: #1f1f1f; 
+            border-radius: 8px; 
+            overflow: hidden; 
+            text-decoration: none; 
+            color: white; 
+            transition: all 0.3s ease; 
+            position: relative; 
+            display: block;
+            border: 2px solid #333; /* Dark Grey Frame */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .card:hover { 
+            transform: scale(1.03); 
+            z-index: 2; 
+            border-color: #E50914; /* Red Glow on Hover */
+            box-shadow: 0 0 15px rgba(229, 9, 20, 0.4); 
+        }
+
+        .card img { 
+            width: 100%; 
+            aspect-ratio: 16 / 9; 
+            object-fit: cover; 
+            display: block;
+            border-bottom: 1px solid #333;
+        }
+
         .card-info { padding: 12px; }
         .title { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .meta { font-size: 12px; color: #888; display: flex; justify-content: space-between; margin-top: 5px; }
+        
+        /* AD BANNER CSS */
         .ad-banner { width: 100%; max-width: 728px; height: auto; min-height: 90px; background: #222; margin: 30px auto; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 8px; border: 1px dashed #444; }
     </style>
 </head>
 
 <body>
 
-    <!-- 1. UNIVERSAL LANDING PAGE (Sabko dikhega) -->
-    <div id="entry-gate">
-        <!-- Logo Animation -->
-        <div style="font-size: 80px; margin-bottom: 10px; filter: drop-shadow(0 0 20px rgba(229,9,20,0.5));">▶</div>
-        
-        <h1 style="color: white; margin: 0; font-size: 32px; font-weight: 800;">VIRALPX</h1>
-        <p style="color: #bbb; font-size: 16px; margin-top: 10px; max-width: 320px;">
-            Premium Free Streaming
-        </p>
+    <header>
+        <div class="logo">ViralPX</div>
+        <input type="text" id="searchInput" class="search-box" placeholder="Search...">
+    </header>
 
-        <!-- Ye Button JS decide karega ki kya karna hai -->
-        <button onclick="enterSite()" class="enter-btn">
-            Watch Now
-        </button>
-
-        <div style="margin-top: 50px; color: #444; font-size: 12px;">
-            Secure Gateway • Fast Server
+    <!-- $$$ ADSTERRA BANNER $$$ -->
+    <div class="container">
+        <div class="ad-banner">
+            <script type="text/javascript">
+                atOptions = {
+                    'key' : '840de81ff5dac8733dfdc0387341c41c', 
+                    'format' : 'iframe',
+                    'height' : 90,
+                    'width' : 728,
+                    'params' : {}
+                };
+            </script>
+            <script type="text/javascript" src="https://www.highperformanceformat.com/840de81ff5dac8733dfdc0387341c41c/invoke.js"></script>
         </div>
     </div>
+    <!-- $$$ END BANNER $$$ -->
 
-    <!-- 2. MAIN WEBSITE CONTENT -->
-    <div id="main-wrapper">
-        <header>
-            <div class="logo">ViralPX</div>
-            <input type="text" id="searchInput" class="search-box" placeholder="Search...">
-        </header>
-
-        <!-- $$$ ADSTERRA BANNER $$$ -->
-        <div class="container">
-            <div class="ad-banner">
-                <script type="text/javascript">
-                    atOptions = {
-                        'key' : '840de81ff5dac8733dfdc0387341c41c', 
-                        'format' : 'iframe',
-                        'height' : 90,
-                        'width' : 728,
-                        'params' : {}
-                    };
-                </script>
-                <script type="text/javascript" src="https://www.highperformanceformat.com/840de81ff5dac8733dfdc0387341c41c/invoke.js"></script>
-            </div>
-        </div>
-        <!-- $$$ END BANNER $$$ -->
-
-        <div class="container">
-            <h2 style="border-left: 5px solid var(--primary); padding-left: 15px;">Trending Now</h2>
-            <div class="grid" id="movieGrid">Loading content...</div>
-        </div>
+    <div class="container">
+        <h2 style="border-left: 5px solid var(--primary); padding-left: 15px;">Trending Now</h2>
+        <div class="grid" id="movieGrid">Loading content...</div>
     </div>
-
-    <!-- 3. INTELLIGENT LOGIC SCRIPT -->
-    <script>
-        function enterSite() {
-            var ua = navigator.userAgent;
-            var gate = document.getElementById('entry-gate');
-            var main = document.getElementById('main-wrapper');
-
-            // --- CHECK: IS IT TELEGRAM? ---
-            if (/Telegram/i.test(ua)) {
-                
-                // === TELEGRAM USER HAI TO BAHAR BHEJO ===
-                var currentUrl = window.location.href;
-                
-                // Method: Google Chrome Scheme (Sabse Safe aur Standard)
-                // Ye fake download nahi hai, ye official app opening method hai
-                var chromeLink = "googlechrome://navigate?url=" + currentUrl;
-                
-                // Try opening
-                window.location.href = chromeLink;
-
-                // Fallback (Agar scheme fail ho jaye to Intent try karo)
-                setTimeout(function(){
-                     window.location.href = "intent://" + currentUrl.replace(/^https?:\/\//, '') + "#Intent;scheme=https;package=com.android.chrome;end";
-                }, 500);
-
-            } else {
-                
-                // === CHROME/NORMAL USER HAI TO SITE DIKHAO ===
-                // Gate Gayab
-                gate.style.opacity = '0';
-                gate.style.transition = 'opacity 0.5s';
-                
-                setTimeout(function() {
-                    gate.style.display = 'none';
-                    main.style.display = 'block';
-                }, 500);
-            }
-        }
-    </script>
 
     <!-- Script Module -->
     <script type="module">
