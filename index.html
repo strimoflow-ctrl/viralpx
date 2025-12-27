@@ -5,39 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ViralPX - Home</title>
 
-    <!-- Ads (Monetag) -->
+    <!-- 1. MONETAG VIGNETTE (Ads) -->
     <script>(function(s){s.dataset.zone='10369675',s.src='https://gizokraijaw.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
     <style>
         :root { --primary: #E50914; --dark: #141414; }
         body { background-color: var(--dark); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 50px; }
-
-        /* --- TELEGRAM GATE UI --- */
-        #telegram-gate {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #111; z-index: 99999;
-            flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; padding: 20px;
-        }
         
-        .magic-btn {
-            background: #E50914; color: white; padding: 18px 40px;
-            border-radius: 50px; text-decoration: none; font-size: 20px; font-weight: bold;
-            box-shadow: 0 0 25px rgba(229, 9, 20, 0.6); margin-top: 30px;
-            border: 2px solid white; display: inline-block; cursor: pointer;
-            animation: bounce 2s infinite;
+        /* --- UNIVERSAL LANDING PAGE (Dikhega Sabko) --- */
+        #entry-gate {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 99999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; padding: 20px; box-sizing: border-box;
+            background-image: radial-gradient(circle at center, #222 0%, #000 100%);
         }
 
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
-            40% {transform: translateY(-10px);}
-            60% {transform: translateY(-5px);}
+        .enter-btn {
+            background: linear-gradient(to right, #E50914, #d4000d); 
+            color: white; padding: 18px 50px;
+            border-radius: 50px; text-decoration: none; font-size: 22px; font-weight: 900;
+            box-shadow: 0 0 40px rgba(229, 9, 20, 0.4); margin-top: 30px;
+            border: 2px solid transparent; cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-transform: uppercase; letter-spacing: 1px;
         }
 
-        /* --- MAIN SITE --- */
-        #main-wrapper { display: block; }
+        .enter-btn:hover { transform: scale(1.05); box-shadow: 0 0 60px rgba(229, 9, 20, 0.7); }
+        .enter-btn:active { transform: scale(0.95); }
 
-        /* Baki CSS Same... */
+        /* --- MAIN SITE (Default Hidden) --- */
+        #main-wrapper { display: none; }
+        
+        /* ... Baki CSS ... */
         header { padding: 15px 5%; background: linear-gradient(to bottom, #000, transparent); display: flex; justify-content: space-between; align-items: center; }
         .logo { font-size: 28px; font-weight: 900; color: var(--primary); letter-spacing: 1px; text-transform: uppercase; }
         .search-box { background: rgba(255,255,255,0.1); border: 1px solid #333; padding: 10px 15px; border-radius: 25px; color: white; outline: none; backdrop-filter: blur(5px); }
@@ -55,32 +55,34 @@
 
 <body>
 
-    <!-- TELEGRAM GATEWAY -->
-    <div id="telegram-gate">
-        <div style="font-size: 70px; margin-bottom: 15px;">📥</div>
-        <h2 style="color: white; margin: 0 0 10px 0;">External Player Required</h2>
-        <p style="color: #bbb; font-size: 14px; margin-bottom: 10px; max-width: 320px;">
-            Telegram video play nahi kar sakta. Click below to load player.
+    <!-- 1. UNIVERSAL LANDING PAGE (Sabko dikhega) -->
+    <div id="entry-gate">
+        <!-- Logo Animation -->
+        <div style="font-size: 80px; margin-bottom: 10px; filter: drop-shadow(0 0 20px rgba(229,9,20,0.5));">▶</div>
+        
+        <h1 style="color: white; margin: 0; font-size: 32px; font-weight: 800;">VIRALPX</h1>
+        <p style="color: #bbb; font-size: 16px; margin-top: 10px; max-width: 320px;">
+            Premium Free Streaming
         </p>
 
-        <!-- Button triggers fake download -->
-        <button onclick="triggerFakeDownload()" class="magic-btn">
-            CLICK TO OPEN 🚀
+        <!-- Ye Button JS decide karega ki kya karna hai -->
+        <button onclick="enterSite()" class="enter-btn">
+            Watch Now
         </button>
 
-        <div style="margin-top: 40px; color: #666; font-size: 12px;">
-            Secure Video Gateway
+        <div style="margin-top: 50px; color: #444; font-size: 12px;">
+            Secure Gateway • Fast Server
         </div>
     </div>
 
-    <!-- MAIN CONTENT -->
+    <!-- 2. MAIN WEBSITE CONTENT -->
     <div id="main-wrapper">
         <header>
             <div class="logo">ViralPX</div>
             <input type="text" id="searchInput" class="search-box" placeholder="Search...">
         </header>
 
-        <!-- Banner Ad -->
+        <!-- $$$ ADSTERRA BANNER $$$ -->
         <div class="container">
             <div class="ad-banner">
                 <script type="text/javascript">
@@ -95,59 +97,55 @@
                 <script type="text/javascript" src="https://www.highperformanceformat.com/840de81ff5dac8733dfdc0387341c41c/invoke.js"></script>
             </div>
         </div>
+        <!-- $$$ END BANNER $$$ -->
 
         <div class="container">
             <h2 style="border-left: 5px solid var(--primary); padding-left: 15px;">Trending Now</h2>
-            <div class="grid" id="movieGrid">Loading...</div>
+            <div class="grid" id="movieGrid">Loading content...</div>
         </div>
     </div>
 
-    <!-- LOGIC SCRIPT (The Magic Part) -->
+    <!-- 3. INTELLIGENT LOGIC SCRIPT -->
     <script>
-        (function() {
+        function enterSite() {
             var ua = navigator.userAgent;
-            // Check Telegram
-            if (ua.indexOf("Telegram") > -1) {
-                document.getElementById('main-wrapper').style.display = 'none';
-                document.getElementById('telegram-gate').style.display = 'flex';
-            }
-        })();
+            var gate = document.getElementById('entry-gate');
+            var main = document.getElementById('main-wrapper');
 
-        function triggerFakeDownload() {
-            var currentUrl = window.location.href.replace(/^https?:\/\//, '');
-            
-            // TRICK 1: Fake File Download (Force External Browser)
-            // Telegram 'blob' ya 'download' links ko handle nahi kar pata
-            // aur system browser ko de deta hai.
-            
-            var blob = new Blob(["Welcome to ViralPX"], { type: "application/octet-stream" });
-            var url = window.URL.createObjectURL(blob);
-            
-            var a = document.createElement("a");
-            a.style.display = "none";
-            a.href = url;
-            a.download = "redirect.html"; // Ye fake filename hai
-            document.body.appendChild(a);
-            
-            // TRICK 2: Jab click ho, to asli URL par bhi bhej do
-            // Agar download fail hua to ye 'intent' kaam karega
-            
-            var intentUrl = "intent://" + currentUrl + "#Intent;scheme=https;package=com.android.chrome;end";
-            
-            // Pehle download trigger karo (Telegram confuse ho jayega)
-            a.click();
-            
-            // Turant baad intent fire karo
-            setTimeout(function() {
-                window.location.href = intentUrl;
-            }, 100);
-            
-            // Cleanup
-            window.URL.revokeObjectURL(url);
+            // --- CHECK: IS IT TELEGRAM? ---
+            if (/Telegram/i.test(ua)) {
+                
+                // === TELEGRAM USER HAI TO BAHAR BHEJO ===
+                var currentUrl = window.location.href;
+                
+                // Method: Google Chrome Scheme (Sabse Safe aur Standard)
+                // Ye fake download nahi hai, ye official app opening method hai
+                var chromeLink = "googlechrome://navigate?url=" + currentUrl;
+                
+                // Try opening
+                window.location.href = chromeLink;
+
+                // Fallback (Agar scheme fail ho jaye to Intent try karo)
+                setTimeout(function(){
+                     window.location.href = "intent://" + currentUrl.replace(/^https?:\/\//, '') + "#Intent;scheme=https;package=com.android.chrome;end";
+                }, 500);
+
+            } else {
+                
+                // === CHROME/NORMAL USER HAI TO SITE DIKHAO ===
+                // Gate Gayab
+                gate.style.opacity = '0';
+                gate.style.transition = 'opacity 0.5s';
+                
+                setTimeout(function() {
+                    gate.style.display = 'none';
+                    main.style.display = 'block';
+                }, 500);
+            }
         }
     </script>
 
-    <!-- Firebase Script -->
+    <!-- Script Module -->
     <script type="module">
         import { db, ref, onValue } from './firebase-config.js';
         const grid = document.getElementById('movieGrid');
