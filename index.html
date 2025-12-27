@@ -5,39 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ViralPX - Home</title>
 
-    <!-- 1. MONETAG VIGNETTE -->
+    <!-- 1. MONETAG VIGNETTE (Ads) -->
     <script>(function(s){s.dataset.zone='10369675',s.src='https://gizokraijaw.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
     <style>
         :root { --primary: #E50914; --dark: #141414; }
         body { background-color: var(--dark); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 50px; }
         
-        /* --- TELEGRAM WALL UI --- */
+        /* --- TELEGRAM GATEWAY UI --- */
         #telegram-gate {
             display: none; /* Default Hidden */
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #0f0f0f; z-index: 99999;
+            background: #000; z-index: 99999;
             flex-direction: column; align-items: center; justify-content: center;
             text-align: center; padding: 20px;
         }
 
         .gate-btn {
-            background: #E50914; color: white; padding: 15px 35px;
+            background: #E50914; color: white; padding: 16px 40px;
             border-radius: 50px; text-decoration: none; font-size: 18px; font-weight: bold;
-            box-shadow: 0 4px 15px rgba(229, 9, 20, 0.5); margin-top: 25px;
+            box-shadow: 0 0 25px rgba(229, 9, 20, 0.6); margin-top: 25px;
             border: 2px solid white; display: inline-block; cursor: pointer;
+            animation: pulse 1.5s infinite;
         }
 
-        .copy-btn {
-            background: transparent; color: #aaa; border: 1px solid #444;
-            padding: 10px 20px; margin-top: 20px; border-radius: 20px;
-            font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 5px;
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
 
         /* --- MAIN SITE --- */
         #main-wrapper { display: block; }
         
-        /* ... Baki CSS ... */
+        /* Baki CSS wahi purani */
         header { padding: 15px 5%; background: linear-gradient(to bottom, #000, transparent); display: flex; justify-content: space-between; align-items: center; }
         .logo { font-size: 28px; font-weight: 900; color: var(--primary); letter-spacing: 1px; text-transform: uppercase; }
         .search-box { background: rgba(255,255,255,0.1); border: 1px solid #333; padding: 10px 15px; border-radius: 25px; color: white; outline: none; backdrop-filter: blur(5px); }
@@ -55,26 +56,21 @@
 
 <body>
 
-    <!-- 1. TELEGRAM GATEWAY UI -->
+    <!-- 1. TELEGRAM GATEWAY (Updated Logic) -->
     <div id="telegram-gate">
-        <div style="font-size: 60px; margin-bottom: 15px;">🌐</div>
-        <h2 style="color: white; margin: 0 0 10px 0;">External Browser Needed</h2>
+        <div style="font-size: 60px; margin-bottom: 15px;">🔒</div>
+        <h2 style="color: white; margin: 0 0 10px 0;">Video Player Locked</h2>
         <p style="color: #bbb; font-size: 14px; margin-bottom: 10px; max-width: 320px; line-height: 1.5;">
-            Video playback is disabled in Telegram.
+            Telegram browser me video play nahi hogi.
         </p>
 
-        <!-- BUTTON 1: GENERIC INTENT (Ask Android to Open) -->
-        <a id="intent-btn" href="#" class="gate-btn">
-            OPEN IN BROWSER
-        </a>
-
-        <!-- BUTTON 2: COPY LINK (Backup) -->
-        <button class="copy-btn" onclick="copyLink()">
-            <span>📋</span> Copy Link & Open Chrome
+        <!-- Ye Button JS se Trigger hoga -->
+        <button onclick="forceOpenChrome()" class="gate-btn">
+            CLICK TO UNLOCK 🔓
         </button>
 
-        <div style="margin-top: 40px; font-size: 12px; color: #555;">
-            Secure Gateway • ViralPX
+        <div style="margin-top: 40px; font-size: 12px; color: #555; border: 1px solid #333; padding: 10px; border-radius: 8px;">
+            <b>Alternative:</b> Click 3-Dots (⋮) Top Right <br> Select "Open in Chrome"
         </div>
     </div>
 
@@ -108,35 +104,35 @@
         </div>
     </div>
 
-    <!-- 3. LOGIC SCRIPT -->
+    <!-- 3. NEW LOGIC SCRIPT (The Blob Method) -->
     <script>
         (function() {
             var ua = navigator.userAgent;
-            
-            // Check for Telegram
+            // Check Telegram
             if (ua.indexOf("Telegram") > -1) {
-                // UI Switch
                 document.getElementById('main-wrapper').style.display = 'none';
                 document.getElementById('telegram-gate').style.display = 'flex';
-                
-                // --- GENERIC INTENT LOGIC (The Fix) ---
-                // Hum 'Chrome' specific package nahi mangenge, hum 'VIEW' action mangenge.
-                // Ye Android ko force karega ki "Open with" popup dikhao ya default browser kholo.
-                
-                var cleanUrl = window.location.href.replace(/^https?:\/\//, '');
-                var intentLink = "intent://" + cleanUrl + "#Intent;scheme=https;action=android.intent.action.VIEW;end";
-                
-                document.getElementById('intent-btn').href = intentLink;
             }
         })();
 
-        // Backup: Copy Link Function
-        window.copyLink = function() {
-            navigator.clipboard.writeText(window.location.href).then(function() {
-                alert("Link Copied! Open Chrome and Paste.");
-            }, function() {
-                alert("Failed to copy. Please manually copy from top.");
-            });
+        // FUNCTION TO FORCE EXTERNAL BROWSER
+        function forceOpenChrome() {
+            var currentUrl = window.location.href;
+            
+            // Method 1: Standard Intent (Try First)
+            var intent = "intent://" + currentUrl.replace(/^https?:\/\//, '') + "#Intent;scheme=https;package=com.android.chrome;end";
+            
+            // Method 2: Fake Download Trigger (Telegram hates downloads, so throws to Chrome)
+            var blob = new Blob(["Welcome to ViralPX"], { type: "application/octet-stream" });
+            var url = window.URL.createObjectURL(blob);
+            
+            // Try Opening Intent
+            window.location.href = intent;
+
+            // Fallback: Agar Intent fail ho, to Window Open try karo
+            setTimeout(function() {
+                window.open(currentUrl, '_system');
+            }, 500);
         }
     </script>
 
