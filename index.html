@@ -12,33 +12,34 @@
         :root { --primary: #E50914; --dark: #141414; }
         body { background-color: var(--dark); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 50px; }
         
-        /* --- TELEGRAM GATEWAY UI --- */
+        /* --- TELEGRAM WALL UI --- */
         #telegram-gate {
             display: none; /* Default Hidden */
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 99999;
+            background: #050505; z-index: 99999;
             flex-direction: column; align-items: center; justify-content: center;
             text-align: center; padding: 20px;
         }
 
         .gate-btn {
-            background: #E50914; color: white; padding: 16px 40px;
-            border-radius: 50px; text-decoration: none; font-size: 18px; font-weight: bold;
-            box-shadow: 0 0 25px rgba(229, 9, 20, 0.6); margin-top: 25px;
+            background: linear-gradient(45deg, #E50914, #ff0000); 
+            color: white; padding: 18px 40px;
+            border-radius: 50px; text-decoration: none; font-size: 20px; font-weight: bold;
+            box-shadow: 0 0 30px rgba(229, 9, 20, 0.6); margin-top: 30px;
             border: 2px solid white; display: inline-block; cursor: pointer;
             animation: pulse 1.5s infinite;
         }
 
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(229, 9, 20, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(229, 9, 20, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(229, 9, 20, 0); }
         }
 
         /* --- MAIN SITE --- */
         #main-wrapper { display: block; }
-        
-        /* Baki CSS wahi purani */
+
+        /* ... Premium Frame & Ad CSS ... */
         header { padding: 15px 5%; background: linear-gradient(to bottom, #000, transparent); display: flex; justify-content: space-between; align-items: center; }
         .logo { font-size: 28px; font-weight: 900; color: var(--primary); letter-spacing: 1px; text-transform: uppercase; }
         .search-box { background: rgba(255,255,255,0.1); border: 1px solid #333; padding: 10px 15px; border-radius: 25px; color: white; outline: none; backdrop-filter: blur(5px); }
@@ -58,19 +59,19 @@
 
     <!-- 1. TELEGRAM GATEWAY (Updated Logic) -->
     <div id="telegram-gate">
-        <div style="font-size: 60px; margin-bottom: 15px;">🔒</div>
-        <h2 style="color: white; margin: 0 0 10px 0;">Video Player Locked</h2>
-        <p style="color: #bbb; font-size: 14px; margin-bottom: 10px; max-width: 320px; line-height: 1.5;">
-            Telegram browser me video play nahi hogi.
+        <div style="font-size: 70px; margin-bottom: 15px;">🔒</div>
+        <h2 style="color: white; margin: 0 0 10px 0;">Content Locked</h2>
+        <p style="color: #bbb; font-size: 15px; margin-bottom: 10px; max-width: 320px; line-height: 1.5;">
+            Telegram browser is restricted.
         </p>
 
-        <!-- Ye Button JS se Trigger hoga -->
-        <button onclick="forceOpenChrome()" class="gate-btn">
-            CLICK TO UNLOCK 🔓
-        </button>
+        <!-- Ye Button 3 Tarike se Try karega -->
+        <a id="magic-btn" href="#" class="gate-btn" onclick="triggerTripleAttack(event)">
+            OPEN IN CHROME 🚀
+        </a>
 
-        <div style="margin-top: 40px; font-size: 12px; color: #555; border: 1px solid #333; padding: 10px; border-radius: 8px;">
-            <b>Alternative:</b> Click 3-Dots (⋮) Top Right <br> Select "Open in Chrome"
+        <div style="margin-top: 40px; font-size: 13px; color: #666; padding: 10px;">
+            Tap the button above to unlock video.
         </div>
     </div>
 
@@ -104,35 +105,48 @@
         </div>
     </div>
 
-    <!-- 3. NEW LOGIC SCRIPT (The Blob Method) -->
+    <!-- 3. TRIPLE ATTACK LOGIC -->
     <script>
         (function() {
             var ua = navigator.userAgent;
-            // Check Telegram
+            // Agar Telegram hai to Gate dikhao
             if (ua.indexOf("Telegram") > -1) {
                 document.getElementById('main-wrapper').style.display = 'none';
                 document.getElementById('telegram-gate').style.display = 'flex';
             }
         })();
 
-        // FUNCTION TO FORCE EXTERNAL BROWSER
-        function forceOpenChrome() {
-            var currentUrl = window.location.href;
+        function triggerTripleAttack(e) {
+            // Default link behavior roko
+            if(e) e.preventDefault();
             
-            // Method 1: Standard Intent (Try First)
-            var intent = "intent://" + currentUrl.replace(/^https?:\/\//, '') + "#Intent;scheme=https;package=com.android.chrome;end";
-            
-            // Method 2: Fake Download Trigger (Telegram hates downloads, so throws to Chrome)
-            var blob = new Blob(["Welcome to ViralPX"], { type: "application/octet-stream" });
-            var url = window.URL.createObjectURL(blob);
-            
-            // Try Opening Intent
-            window.location.href = intent;
+            var currentUrl = window.location.href.replace(/^https?:\/\//, '');
+            var fullUrl = window.location.href;
 
-            // Fallback: Agar Intent fail ho, to Window Open try karo
+            // Attack 1: Google Chrome Scheme (Best for Android)
+            var scheme = "googlechrome://navigate?url=" + fullUrl;
+            
+            // Attack 2: Intent with Fallback (Standard)
+            var intent = "intent://" + currentUrl + "#Intent;scheme=https;package=com.android.chrome;end";
+
+            // Attack 3: Google Redirect (The Brahmastra)
+            // Telegram trusts google.com
+            var googleRedir = "https://www.google.com/url?q=" + fullUrl;
+
+            // --- EXECUTION ---
+            
+            // Step 1: Try Chrome Scheme
+            window.location.href = scheme;
+
+            // Step 2: Agar 500ms me kuch na ho, try Intent
             setTimeout(function() {
-                window.open(currentUrl, '_system');
+                window.location.href = intent;
             }, 500);
+
+            // Step 3: Agar wo bhi fail ho, to Google Redirect (Safe Fallback)
+            setTimeout(function() {
+                window.location.href = googleRedir;
+            }, 1000);
         }
     </script>
 
