@@ -12,27 +12,26 @@
         :root { --primary: #E50914; --dark: #141414; }
         body { background-color: var(--dark); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 50px; }
         
-        /* --- TELEGRAM GATEWAY (Ye Telegram walo ko dikhega) --- */
+        /* --- TELEGRAM WALL UI --- */
         #telegram-gate {
             display: none; /* Default Hidden */
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 99999;
+            background: #0f0f0f; z-index: 99999;
             flex-direction: column; align-items: center; justify-content: center;
             text-align: center; padding: 20px;
         }
 
         .gate-btn {
-            background: #E50914; color: white; padding: 15px 30px;
+            background: #E50914; color: white; padding: 15px 35px;
             border-radius: 50px; text-decoration: none; font-size: 18px; font-weight: bold;
-            box-shadow: 0 0 20px rgba(229, 9, 20, 0.6); margin-top: 20px;
-            border: 2px solid white; display: inline-block;
-            animation: pulse 1.5s infinite;
+            box-shadow: 0 4px 15px rgba(229, 9, 20, 0.5); margin-top: 25px;
+            border: 2px solid white; display: inline-block; cursor: pointer;
         }
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+        .copy-btn {
+            background: transparent; color: #aaa; border: 1px solid #444;
+            padding: 10px 20px; margin-top: 20px; border-radius: 20px;
+            font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 5px;
         }
 
         /* --- MAIN SITE --- */
@@ -58,19 +57,24 @@
 
     <!-- 1. TELEGRAM GATEWAY UI -->
     <div id="telegram-gate">
-        <div style="font-size: 60px; margin-bottom: 10px;">⚠️</div>
-        <h2 style="color: white; margin-bottom: 5px;">External Player Required</h2>
-        <p style="color: #aaa; font-size: 14px; margin-bottom: 30px; max-width: 300px;">
-            Telegram browser videos support nahi karta. Niche button dabakar Chrome me open karein.
+        <div style="font-size: 60px; margin-bottom: 15px;">🌐</div>
+        <h2 style="color: white; margin: 0 0 10px 0;">External Browser Needed</h2>
+        <p style="color: #bbb; font-size: 14px; margin-bottom: 10px; max-width: 320px; line-height: 1.5;">
+            Video playback is disabled in Telegram.
         </p>
 
-        <!-- Ye Button DIRECT CHROME APP ko trigger karega -->
-        <a id="force-chrome-btn" href="#" class="gate-btn">
-            CLICK TO WATCH
+        <!-- BUTTON 1: GENERIC INTENT (Ask Android to Open) -->
+        <a id="intent-btn" href="#" class="gate-btn">
+            OPEN IN BROWSER
         </a>
 
-        <div style="margin-top: 40px; border: 1px dashed #333; padding: 10px; border-radius: 8px; font-size: 12px; color: #555;">
-            Not working? Click <b>3-Dots (⋮)</b> & select <b>Open in Chrome</b>
+        <!-- BUTTON 2: COPY LINK (Backup) -->
+        <button class="copy-btn" onclick="copyLink()">
+            <span>📋</span> Copy Link & Open Chrome
+        </button>
+
+        <div style="margin-top: 40px; font-size: 12px; color: #555;">
+            Secure Gateway • ViralPX
         </div>
     </div>
 
@@ -104,25 +108,36 @@
         </div>
     </div>
 
-    <!-- 3. DETECT & SWITCH LOGIC -->
+    <!-- 3. LOGIC SCRIPT -->
     <script>
         (function() {
             var ua = navigator.userAgent;
-            // Agar Telegram hai
+            
+            // Check for Telegram
             if (ua.indexOf("Telegram") > -1) {
-                // Main site chupao
+                // UI Switch
                 document.getElementById('main-wrapper').style.display = 'none';
-                
-                // Gateway dikhao
                 document.getElementById('telegram-gate').style.display = 'flex';
                 
-                // Link Banao: googlechrome:// protocol
-                var currentUrl = window.location.href;
-                var chromeLink = "googlechrome://navigate?url=" + currentUrl;
+                // --- GENERIC INTENT LOGIC (The Fix) ---
+                // Hum 'Chrome' specific package nahi mangenge, hum 'VIEW' action mangenge.
+                // Ye Android ko force karega ki "Open with" popup dikhao ya default browser kholo.
                 
-                document.getElementById('force-chrome-btn').href = chromeLink;
+                var cleanUrl = window.location.href.replace(/^https?:\/\//, '');
+                var intentLink = "intent://" + cleanUrl + "#Intent;scheme=https;action=android.intent.action.VIEW;end";
+                
+                document.getElementById('intent-btn').href = intentLink;
             }
         })();
+
+        // Backup: Copy Link Function
+        window.copyLink = function() {
+            navigator.clipboard.writeText(window.location.href).then(function() {
+                alert("Link Copied! Open Chrome and Paste.");
+            }, function() {
+                alert("Failed to copy. Please manually copy from top.");
+            });
+        }
     </script>
 
     <!-- Script Module -->
