@@ -1,148 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- 1. MONETAG VIGNETTE (Head me sabse upar) -->
+    <!-- 1. MONETAG VIGNETTE (Head me) -->
     <script>(function(s){s.dataset.zone='10369675',s.src='https://gizokraijaw.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-    <script>
-(function() {
-    var userAgent = navigator.userAgent || navigator.vendor || window.opera;
     
-    // Check agar user Telegram ke andar hai
-    if (/Telegram/i.test(userAgent)) {
-        
-        // Current URL uthao (https:// hata kar)
-        var currentUrl = window.location.href.replace("https://", "").replace("http://", "");
-        
-        // Agar user ANDROID par hai (Zyadatar users)
-        if (/android/i.test(userAgent)) {
-            
-            // OPTION 1: Direct Chrome Force (Sabse Best)
-            // Ye seedha Chrome App ko trigger karega
-            window.location.href = "intent://" + currentUrl + "#Intent;scheme=https;package=com.android.chrome;end";
-            
-            // Fallback: Agar Chrome nahi hai, to default browser try karega
-            setTimeout(function() {
-                window.location.href = "intent://" + currentUrl + "#Intent;scheme=https;end";
-            }, 500);
-            
-            // Page ko yahi rok do taaki Telegram me load na ho
-            document.body.innerHTML = "<div style='background:black;color:white;height:100vh;display:flex;justify-content:center;align-items:center;'><h1>Opening in Chrome...</h1></div>";
-            window.stop();
-        } 
-        
-        // Agar user IPHONE (iOS) par hai
-        else if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-            // iOS security strict hai, auto-jump mushkil hai.
-            // Hum unhe alert denge.
-            alert("⚠ Please click the '...' icon (top right) and choose 'Open in Safari/Browser' to watch the video properly.");
-        }
-    }
-})();
-</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Watching...</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    
     <style>
         body { background: #000; color: white; font-family: 'Segoe UI', sans-serif; margin: 0; min-height: 100vh; display: flex; flex-direction: column; }
-        
         .layout { display: flex; flex-wrap: wrap; max-width: 1200px; margin: 0 auto; width: 100%; padding-top: 10px; }
         .video-section { flex: 3; min-width: 300px; padding: 10px; }
         .playlist-section { flex: 1; min-width: 250px; background: #111; height: fit-content; max-height: 500px; overflow-y: auto; margin: 10px; border-radius: 8px; border: 1px solid #333; }
 
-        /* --- VIDEO WRAPPER (Magic Fix) --- */
-        /* Ye video aur ad ko ek hi size me lock karega (16:9 Ratio) */
+        /* VIDEO WRAPPER (16:9 Lock) */
         .video-wrapper {
-            position: relative;
-            width: 100%;
-            padding-top: 56.25%; /* 16:9 Aspect Ratio */
-            background: black;
-            overflow: hidden; /* Bahar kuch nahi jayega */
-            border-radius: 4px;
-            box-shadow: 0 0 20px rgba(255,255,255,0.05);
+            position: relative; width: 100%; padding-top: 56.25%; background: black;
+            overflow: hidden; border-radius: 4px; box-shadow: 0 0 20px rgba(255,255,255,0.05);
         }
-
-        video {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            object-fit: contain;
-        }
+        video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; }
 
         /* --- AD OVERLAY CSS --- */
         #ad-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #000;
-            z-index: 999; /* Video ke upar */
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 999; display: flex; justify-content: center; align-items: center;
         }
+        .ad-click-area { width: 100%; height: 100%; display: block; position: relative; cursor: pointer; }
+        #ad-image-display { width: 100%; height: 100%; object-fit: cover; }
+        .ad-badge { position: absolute; top: 10px; left: 10px; background: #fcba03; color: black; padding: 2px 6px; font-size: 11px; font-weight: bold; border-radius: 2px; }
 
-        /* Link Wrapper */
-        .ad-click-area {
-            width: 100%; height: 100%;
-            display: block;
-            text-decoration: none;
-            cursor: pointer;
-            position: relative;
-        }
-
-        /* Image Setup */
-        #ad-image-display {
-            width: 100%; height: 100%;
-            object-fit: cover; /* Poora bharega */
-        }
-
-        .ad-badge {
-            position: absolute; top: 10px; left: 10px;
-            background: #fcba03; color: black; padding: 2px 6px;
-            font-size: 11px; font-weight: bold; border-radius: 2px;
-            z-index: 2;
-        }
-
-        /* --- SKIP BUTTON (YouTube Style) --- */
+        /* Skip Button */
         .skip-btn {
-            position: absolute;
-            bottom: 15px; right: 15px; /* Right Bottom Corner */
-            background: rgba(0, 0, 0, 0.8); /* Black Background */
-            color: white;
-            padding: 8px 18px;
-            border: 1px solid rgba(255,255,255,0.2);
-            font-size: 13px; font-weight: 600;
-            cursor: default; /* Pehle click nahi hoga */
-            border-radius: 4px;
-            z-index: 1001;
-            transition: all 0.3s ease;
-            opacity: 0.9;
+            position: absolute; bottom: 15px; right: 15px;
+            background: rgba(0, 0, 0, 0.8); color: white; padding: 8px 18px;
+            border: 1px solid rgba(255,255,255,0.2); font-size: 13px; font-weight: 600;
+            cursor: default; border-radius: 4px; z-index: 1001; opacity: 0.9;
         }
-        
-        .skip-btn.active {
-            background: rgba(0, 0, 0, 0.95);
-            border-color: white;
-            cursor: pointer;
-            opacity: 1;
-        }
-        
-        .skip-btn:hover.active {
-            background: #222;
-        }
+        .skip-btn.active { background: rgba(0, 0, 0, 0.95); border-color: white; cursor: pointer; opacity: 1; }
 
-        /* --- BANNER AD CSS --- */
-        .revenue-block {
-            width: 100%; background: #111; padding: 10px; margin-top: 15px;
-            border-radius: 8px; border: 1px solid #333; text-align: center;
-            display: flex; align-items: center; justify-content: center; overflow: hidden;
-        }
-
-        /* Playlist Styles */
+        /* Banner & Info */
+        .revenue-block { width: 100%; background: #111; padding: 10px; margin-top: 15px; border-radius: 8px; border: 1px solid #333; text-align: center; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .info { margin-top: 20px; }
         h1 { font-size: 22px; color: #fff; margin: 0; }
-        .action-bar { display: flex; gap: 15px; margin-top: 10px; }
-        .tg-btn { background: #0088cc; color: white; text-decoration: none; padding: 8px 15px; border-radius: 4px; font-weight: bold; font-size: 14px; }
+        .tg-btn { background: #0088cc; color: white; text-decoration: none; padding: 8px 15px; border-radius: 4px; font-weight: bold; font-size: 14px; margin-right: 10px; }
         .episode-btn { width: 100%; padding: 12px; background: transparent; border: none; color: #ccc; text-align: left; cursor: pointer; border-bottom: 1px solid #222; display: flex; gap: 10px; }
-        .episode-btn:hover { background: #222; }
         .episode-btn.active { background: #222; color: #E50914; border-left: 3px solid #E50914; }
     </style>
 </head>
@@ -155,25 +58,21 @@
 
     <div class="layout">
         <div class="video-section">
-            
-            <!-- VIDEO WRAPPER (Iske andar sab kuch lock hai) -->
             <div class="video-wrapper">
                 
-                <!-- !!! IMAGE AD OVERLAY !!! -->
+                <!-- AD OVERLAY -->
                 <div id="ad-overlay">
-                    <!-- MONETAG LINK YAHAN DALO -->
-                    <a href="https://otieu.com/4/9793934" target="_blank" class="ad-click-area">
-                        <div class="ad-badge">Ad</div>
+                    <a id="ad-link" href="#" target="_blank" class="ad-click-area">
+                        <div class="ad-badge">Sponsored</div>
                         <img id="ad-image-display" src="" alt="Advertisement">
                     </a>
-                    <button id="skipBtn" class="skip-btn" onclick="skipAd()">Wait 3s</button>
+                    <button id="skipBtn" class="skip-btn" onclick="skipAd()">Wait 5s</button>
                 </div>
-                <!-- !!! END OVERLAY !!! -->
 
                 <video id="vid" controls controlsList="nodownload"></video>
             </div>
 
-            <!-- !!! ADSTERRA BANNER (Niche wala) !!! -->
+            <!-- ADSTERRA BANNER -->
             <div class="revenue-block">
                  <script type="text/javascript">
                     atOptions = {
@@ -184,18 +83,16 @@
                         'params' : {}
                     };
                 </script>
-                <script type="text/javascript" src="//www.highperformanceformat.com/840de81ff5dac8733dfdc0387341c41c/invoke.js"></script>
+                <script type="text/javascript" src="https://www.highperformanceformat.com/840de81ff5dac8733dfdc0387341c41c/invoke.js"></script>
             </div>
-            <!-- !!! END BANNER !!! -->
 
             <div class="info">
                 <h1 id="mTitle">Loading...</h1>
                 <div style="color: #aaa; font-size: 13px; margin-top:5px;">
                     <span id="mViews">...</span> | <span id="currentEpName">Movie</span>
                 </div>
-                <div class="action-bar">
+                <div style="margin-top:10px;">
                     <a href="https://t.me/viralpx" target="_blank" class="tg-btn">🚀 Join Telegram</a>
-                    <button class="tg-btn" style="background: #333;" onclick="navigator.clipboard.writeText(window.location.href); alert('Link Copied!');">🔗 Share</button>
                 </div>
             </div>
         </div>
@@ -209,42 +106,98 @@
     <script type="module">
         import { db, ref, get, update, child } from './firebase-config.js';
 
-        // --- RANDOM AD IMAGE CONFIG ---
-        const adImages = [
-            "https://image.tmdb.org/t/p/original/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg",
-            "https://image.tmdb.org/t/p/original/fqv8v6AycXKsivp1T5yKtLbGXce.jpg",
-            "https://image.tmdb.org/t/p/original/1E5baAaEse26fej7uHkjJDvp57k.jpg"
-        ];
-        document.getElementById('ad-image-display').src = adImages[Math.floor(Math.random() * adImages.length)];
-
-        // --- TIMER LOGIC (YouTube Style) ---
-        let timeLeft = 3; 
-        const skipBtn = document.getElementById('skipBtn');
-        const adOverlay = document.getElementById('ad-overlay');
-        const video = document.getElementById('vid');
-
-        const timer = setInterval(() => {
-            timeLeft--;
-            if(timeLeft > 0) {
-                skipBtn.innerText = "" + timeLeft; // Sirf number dikhayega jaise YT
-            } else {
-                clearInterval(timer);
-                skipBtn.innerText = "Skip Ad";
-                skipBtn.classList.add('active');
+        // ==========================================
+        // 🛠️ ADMIN AD SETTINGS (Yahan Edit Karo) 🛠️
+        // ==========================================
+        
+        // Jitne chaho utne ads add karo. {img: 'Link', url: 'Link'}
+        const adList = [
+            {
+                img: "https://image.tmdb.org/t/p/original/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg", // Image 1 (Uncut)
+                url: "https://monetag-link-1.com" // Link 1
+            },
+            {
+                img: "https://image.tmdb.org/t/p/original/fqv8v6AycXKsivp1T5yKtLbGXce.jpg", // Image 2 (Fake Player)
+                url: "https://adsterra-direct-link.com" // Link 2
+            },
+            {
+                img: "https://image.tmdb.org/t/p/original/1E5baAaEse26fej7uHkjJDvp57k.jpg", // Image 3 (Viral)
+                url: "https://another-cpa-link.com" // Link 3
             }
-        }, 1000);
+        ];
 
-        window.skipAd = (e) => {
-            if(e) e.preventDefault();
-            adOverlay.style.display = 'none';
-            if(video.src) video.play();
+        // Ad Settings
+        const AD_INTERVAL_SECONDS = 30; // Har 30 sec baad ad aayega
+        const SKIP_TIME_SECONDS = 5;    // 5 sec baad skip button aayega
+
+        // ==========================================
+        
+        let adInterval;
+        let isAdShowing = true; // Shuru me Ad dikhana hai
+        const video = document.getElementById('vid');
+        const overlay = document.getElementById('ad-overlay');
+        const adImg = document.getElementById('ad-image-display');
+        const adLink = document.getElementById('ad-link');
+        const skipBtn = document.getElementById('skipBtn');
+
+        // Function: Load Random Ad
+        function loadRandomAd() {
+            const randomAd = adList[Math.floor(Math.random() * adList.length)];
+            adImg.src = randomAd.img;
+            adLink.href = randomAd.url;
+            
+            // Show Overlay
+            overlay.style.display = 'flex';
+            isAdShowing = true;
+            video.pause(); // Video pause karo
+            startSkipTimer();
         }
 
-        skipBtn.addEventListener('click', (e) => {
-             e.preventDefault(); e.stopPropagation(); skipAd();
-        });
+        // Function: Timer logic for Skip Button
+        function startSkipTimer() {
+            let timeLeft = SKIP_TIME_SECONDS;
+            skipBtn.classList.remove('active');
+            skipBtn.innerText = `Wait ${timeLeft}s`;
 
-        // --- FIREBASE LOGIC ---
+            const timer = setInterval(() => {
+                timeLeft--;
+                if(timeLeft > 0) {
+                    skipBtn.innerText = `Wait ${timeLeft}s`;
+                } else {
+                    clearInterval(timer);
+                    skipBtn.innerText = "Skip Ad ►";
+                    skipBtn.classList.add('active');
+                }
+            }, 1000);
+        }
+
+        // Global Skip Function
+        window.skipAd = () => {
+            if (!skipBtn.classList.contains('active')) return;
+
+            overlay.style.display = 'none';
+            isAdShowing = false;
+            video.play();
+            
+            // Reset Interval for Next Ad
+            resetAdInterval();
+        }
+
+        // Interval Logic (Every 30s)
+        function resetAdInterval() {
+            if(adInterval) clearInterval(adInterval);
+            
+            adInterval = setInterval(() => {
+                if(!video.paused && !isAdShowing) {
+                    loadRandomAd();
+                }
+            }, AD_INTERVAL_SECONDS * 1000);
+        }
+
+        // Initial Load
+        loadRandomAd(); // Page load hote hi first Ad
+
+        // --- FIREBASE LOGIC (Same as before) ---
         const params = new URLSearchParams(window.location.search);
         const movieId = params.get('id');
         if(!movieId) window.location.href = 'index.html';
